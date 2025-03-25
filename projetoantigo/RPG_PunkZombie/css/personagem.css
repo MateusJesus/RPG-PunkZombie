@@ -1,0 +1,266 @@
+
+.personagem{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+    width: 100%;
+    padding-top: 4em;
+}
+
+.sobre_personagem{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.informacoes_status{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.div-inf_stat{
+    display: flex;
+    gap: 10px;
+}
+
+.informacoes_perso input{
+    width: calc(100% - 1em);
+    height: 1em;
+}
+
+.informacoes_perso {
+    width: 100%;
+}
+
+.informacoes_perso .title_content {
+    padding: 1em;
+}
+
+.content_perso {
+    display: flex;
+    gap: 7px;
+    flex-direction: column;
+    margin: .5em;
+}
+
+.inf_item{
+    display: flex;
+    flex-direction: column;
+    text-transform: uppercase;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+.status{
+    width: 100%;
+}
+
+.status_content{
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.if_status {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.status .title_content {
+    width: 6em;
+}
+
+.content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0 .5em;
+}
+
+.content input{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    width: 100%;
+    height: 100%;
+    padding: .5em;
+    font-weight: 700;
+} 
+
+
+.carac_personagem {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+}
+
+.caracteristica {
+    height: 100%;
+}
+
+.resistencia_foto{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 44em;
+}
+
+.resistencia{
+    display: flex;
+}
+
+.resistencia .title_content{
+    padding: 1em;
+}
+
+.resistencia input{
+    margin: .5em;
+    width: 100%;
+}
+
+.imagem_perso {
+    height: 40em;
+    width: 100%;
+    text-align: center;
+}
+
+.imagem_perso img {
+    height: auto;
+    cursor: pointer;
+    text-align: center;
+}
+
+.imagem_perso input {
+    display: none;
+}
+
+.imagem_perso i {
+    font-size: 30px;
+}
+
+#imagemContainer {
+    height: auto;
+    width: 44em;
+    display: flex;
+    justify-content: center;
+    padding: 1em;
+    height: calc(100% - 2em);
+    width: calc(100% - 2em);
+}
+
+.custom-file-upload {
+    font-weight: 400;
+    display: flex;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed var(--color-3);
+    cursor: pointer;
+    height: 100%;
+    width: 21em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background ease-in-out .5s;
+}
+
+.custom-file-upload:hover {
+    border: 2px dashed var(--color-4);
+    background-color: rgba(129, 129, 129, 0.2);
+}
+
+.degrade {
+    font-weight: 600;
+    position: absolute;
+    transform: translateY(.5em);
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    padding: .3em 10em .3em 1em;
+    justify-content: center;
+    color: var(--white);
+    background: rgb(255,0,0);
+    background: -moz-linear-gradient(90deg, rgba(255,0,0,0.5) 0%, rgba(255,0,0,0.5) 50%, rgba(255,0,0,0) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(255,0,0,0.5) 0%, rgba(255,0,0,0.5) 50%, rgba(255,0,0,0) 100%);
+    background: linear-gradient(90deg, rgba(255,0,0,0.5) 0%, rgba(255,0,0,0.5) 50%, rgba(255,0,0,0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff0000",endColorstr="#ff0000",GradientType=1);
+    animation: fade 2s infinite;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+.atri_peri{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 80%;
+}
+
+.atributos {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.atributos input {
+    width: calc(100% - 2em);
+    font-size: 17px;
+    margin: .5em;
+    text-align: center;
+    font-weight: 700;
+}
+
+
+.pericias{
+    text-align: center;
+    height: 100%;
+}
+
+.pericia_content {
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: .2em;
+    height: 32.5em;
+}
+
+.thPer {
+    width: 18em;
+}
+
+.tdsoma{
+    background-color: var(--color-3);
+    border-radius: 10em;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tdsoma p {
+    height: 2em;
+    width: 1.5em;
+    display: block;
+    color: var(--white);
+    line-height: 2em;
+}
+
