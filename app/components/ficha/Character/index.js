@@ -1,9 +1,10 @@
 "use client";
 
-import styled from "styled-components";
-import { VscDash } from "react-icons/vsc";
+import classStyled from "./personagem.module.css";
 import { FaFileImage } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { IoShieldSharp } from "react-icons/io5";
+import RemoveItem from "../../Buttons/RemoveItem";
 
 export default function Character({
   handleImageChange,
@@ -11,39 +12,6 @@ export default function Character({
   formData,
   setFormData,
 }) {
-  const ob = [
-    {
-      soma: 2,
-      nomePericia: "1",
-      atributoPer: "",
-      outros: 0,
-    },
-    {
-      soma: 2,
-      nomePericia: "11",
-      atributoPer: "INT",
-      outros: 0,
-    },
-    {
-      soma: 2,
-      nomePericia: "7",
-      atributoPer: "AGI",
-      outros: 0,
-    },
-    {
-      soma: 2,
-      nomePericia: "5",
-      atributoPer: "CAR",
-      outros: 0,
-    },
-    {
-      soma: 2,
-      nomePericia: "9",
-      atributoPer: "CAR",
-      outros: 0,
-    },
-  ];
-
   useEffect(() => {
     calcularPer();
   }, [
@@ -52,6 +20,7 @@ export default function Character({
     formData.vigor,
     formData.carisma,
     formData.inteligencia,
+    formData.niv,
   ]);
 
   const calcularPer = () => {
@@ -65,7 +34,7 @@ export default function Character({
               (pericia.atributoPer === "INT" && formData.inteligencia) ||
               (pericia.atributoPer === "VIG" && formData.vigor) ||
               (pericia.atributoPer === "CAR" && formData.carisma) ||
-              formData.forca
+              (pericia.atributoPer === "" && formData.forca)
           ) || 0) +
           2 +
           (parseInt(prevFormData.niv / 2 || 0) || 0) +
@@ -100,14 +69,14 @@ export default function Character({
       pericias: [
         ...formData.pericias,
         {
-          soma:
-            Number(formData.forca) + 2 + (parseInt(formData.niv / 2 || 0) || 0),
-          nomePericia: 4,
+          soma: 2,
+          nomePericia: 0,
           atributoPer: "",
           outros: 0,
         },
       ],
     });
+    calcularPer();
   };
 
   const handlePericiaRemove = (index) => {
@@ -153,18 +122,21 @@ export default function Character({
     { label: "TECNOLOGIA", value: "INT", treinado: true },
     { label: "VONTADE", value: "CAR" },
   ];
-  
 
   return (
-    <CharacterStyled>
-      <h2 className="title_content">Personagem</h2>
-      <div className="sobre_personagem">
-        <div className="informacoes_status">
-          <div className="div-inf_stat">
-            <div className="informacoes_perso box">
-              <h2 className="title_content">Informações</h2>
-              <div className="content_perso">
-                <div className="inf_item">
+    <section className={classStyled.personagem}>
+      <h2 className={classStyled.title_content + " title_content"}>
+        Personagem
+      </h2>
+      <div className={classStyled.sobre_personagem}>
+        <div className={classStyled.informacoes_status}>
+          <div className={classStyled.div_inf_stat}>
+            <div className={classStyled.informacoes_perso + " box"}>
+              <h2 className={classStyled.title_content + " title_content"}>
+                Informações
+              </h2>
+              <div className={classStyled.content_perso}>
+                <div className={classStyled.inf_item}>
                   <label htmlFor="nomeJogador">Nome do Jogador:</label>
                   <input
                     maxLength="20"
@@ -175,18 +147,7 @@ export default function Character({
                     onChange={handleChange}
                   />
                 </div>
-                <div className="inf_item">
-                  <label htmlFor="nomePersonagem">Nome do Personagem:</label>
-                  <input
-                    maxLength="30"
-                    id="nomePersonagem"
-                    name="nomePersonagem"
-                    type="text"
-                    value={formData.nomePersonagem}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="inf_item">
+                <div className={classStyled.inf_item}>
                   <label htmlFor="variante">Variante:</label>
                   <input
                     maxLength="15"
@@ -197,7 +158,7 @@ export default function Character({
                     onChange={handleChange}
                   />
                 </div>
-                <div className="inf_item">
+                <div className={classStyled.inf_item}>
                   <label htmlFor="origem">Origem:</label>
                   <input
                     id="origem"
@@ -207,7 +168,7 @@ export default function Character({
                     onChange={handleChange}
                   />
                 </div>
-                <div className="inf_item">
+                <div className={classStyled.inf_item}>
                   <label htmlFor="classe">Classe:</label>
                   <input
                     id="classe"
@@ -217,16 +178,29 @@ export default function Character({
                     onChange={handleChange}
                   />
                 </div>
+                <div className={classStyled.inf_item}>
+                  <label htmlFor="resistPer">Resistencia:</label>
+                  <input
+                    maxLength="30"
+                    id="resistPer"
+                    name="resistPer"
+                    type="text"
+                    value={formData.resistencia}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
             </div>
-            <div className="status">
-              <div className="status_content">
-                <div className="if_status box">
-                  <h2 className="title_content">NIV</h2>
-                  <div className="content">
+            <div className={classStyled.status}>
+              <div className={classStyled.status_content}>
+                <div className={classStyled.if_status + " box"}>
+                  <h2 className={classStyled.title_content + " title_content"}>
+                    NIV
+                  </h2>
+                  <div className={classStyled.content}>
                     <input
                       maxLength="2"
-                      className="input_num"
+                      className={classStyled.input_num}
                       type="text"
                       name="niv"
                       id="status_niv"
@@ -235,12 +209,14 @@ export default function Character({
                     />
                   </div>
                 </div>
-                <div className="if_status box">
-                  <h2 className="title_content">PV</h2>
-                  <div className="content">
+                <div className={classStyled.if_status + " box"}>
+                  <h2 className={classStyled.title_content + " title_content"}>
+                    PV
+                  </h2>
+                  <div className={classStyled.content}>
                     <input
                       maxLength="2"
-                      className="input_num"
+                      className={classStyled.input_num}
                       type="text"
                       name="pdv"
                       id="status_pdv"
@@ -250,7 +226,7 @@ export default function Character({
                     <hr />
                     <input
                       maxLength="2"
-                      className="input_num"
+                      className={classStyled.input_num}
                       type="text"
                       name="pdvTotal"
                       id="status_pdvtot"
@@ -259,12 +235,14 @@ export default function Character({
                     />
                   </div>
                 </div>
-                <div className="if_status box">
-                  <h2 className="title_content">STA</h2>
-                  <div className="content">
+                <div className={classStyled.if_status + " box"}>
+                  <h2 className={classStyled.title_content + " title_content"}>
+                    STA
+                  </h2>
+                  <div className={classStyled.content}>
                     <input
                       maxLength="2"
-                      className="input_num"
+                      className={classStyled.input_num}
                       type="text"
                       name="sta"
                       id="status_sta"
@@ -274,7 +252,7 @@ export default function Character({
                     <hr />
                     <input
                       maxLength="2"
-                      className="input_num"
+                      className={classStyled.input_num}
                       type="text"
                       name="staTotal"
                       id="status_statot"
@@ -283,12 +261,14 @@ export default function Character({
                     />
                   </div>
                 </div>
-                <div className="if_status box">
-                  <h2 className="title_content">PDI</h2>
-                  <div className="content">
+                <div className={classStyled.if_status + " box"}>
+                  <h2 className={classStyled.title_content + " title_content"}>
+                    PDI
+                  </h2>
+                  <div className={classStyled.content}>
                     <input
                       maxLength="2"
-                      className="input_num"
+                      className={classStyled.input_num}
                       type="text"
                       name="pdi"
                       id="status_pdi"
@@ -298,7 +278,7 @@ export default function Character({
                     <hr />
                     <input
                       maxLength="2"
-                      className="input_num"
+                      className={classStyled.input_num}
                       type="text"
                       name="pdiTotal"
                       id="status_pditot"
@@ -307,10 +287,13 @@ export default function Character({
                     />
                   </div>
                 </div>
-                <div className="if_status box">
-                  <h2 className="title_content">DEF</h2>
-                  <div className="content">
-                    <p className="res_carga" id="res_defesa">
+                <div className={classStyled.if_status + " box"}>
+                  <h2 className={classStyled.title_content + " title_content"}>
+                    DEF
+                  </h2>
+                  <div className={classStyled.content}>
+                    <IoShieldSharp className={classStyled.res_defesa} />
+                    <p className={classStyled.res_defesa_txt} id="res_defesa">
                       {formData.defesa}
                     </p>
                     <input type="hidden" name="defesaTotal" id="defesaTotal" />
@@ -319,8 +302,8 @@ export default function Character({
               </div>
             </div>
           </div>
-          <div className="carac_personagem">
-            <div className="caracteristica box">
+          <div className={classStyled.carac_personagem}>
+            <div className={classStyled.caracteristica + " box"}>
               <h2 className="title_content">Aparência</h2>
               <textarea
                 name="aparencia"
@@ -331,7 +314,7 @@ export default function Character({
                 onChange={handleChange}
               ></textarea>
             </div>
-            <div className="caracteristica box">
+            <div className={classStyled.caracteristica + " box"}>
               <h2 className="title_content">Personalidade</h2>
               <textarea
                 name="personalidade"
@@ -344,54 +327,56 @@ export default function Character({
             </div>
           </div>
         </div>
-        <div className="resistencia_foto">
-          <div className="resistencia box">
-            <h2 className="title_content">Resistência</h2>
+        <div className={classStyled.resistencia_foto}>
+          <div className={classStyled.resistencia + " box"}>
+            <h2 className={classStyled.title_content + " title_content"}>
+              Nome
+            </h2>
             <input
               type="text"
-              name="resistPer"
+              name="nomePersonagem"
               id="resist_perso"
-              value={formData.resistPer}
+              value={formData.nomePersonagem}
               onChange={handleChange}
             />
           </div>
-          <div className="imagem_perso box">
-            <div id="imagemContainer">
-              {formData.imagem ? (
-                <img
-                  id="img_personagem"
-                  src={formData.imagem || "sd"}
-                  alt="Imagem do personagem"
+          <div className={classStyled.imagem_perso + " box"}>
+            {formData.imagem ? (
+              <img
+                id="img_personagem"
+                src={formData.imagem || "sd"}
+                alt="Imagem do personagem"
+              />
+            ) : (
+              <label
+                htmlFor="inputImgPerso"
+                id="customFileUpload"
+                className={classStyled.custom_file_upload}
+              >
+                <span id="spanFileUpload">
+                  <FaFileImage className={classStyled.icon} />
+                  <br />
+                  Clique ou arraste e
+                  <br />
+                  solte sua imagem aqui.
+                </span>
+                <input
+                  type="file"
+                  name="inputImgPerso"
+                  id="inputImgPerso"
+                  accept=".jpg, .jpeg, .png"
+                  onChange={handleImageChange}
                 />
-              ) : (
-                <label
-                  htmlFor="inputImgPerso"
-                  id="customFileUpload"
-                  className="custom-file-upload"
-                >
-                  <span id="spanFileUpload">
-                    <FaFileImage className="icon" />
-                    <br />
-                    Clique ou arraste e
-                    <br />
-                    solte sua imagem aqui.
-                  </span>
-                  <input
-                    type="file"
-                    name="inputImgPerso"
-                    id="inputImgPerso"
-                    accept=".jpg, .jpeg, .png"
-                    onChange={handleImageChange}
-                  />
-                </label>
-              )}
-            </div>
+              </label>
+            )}
           </div>
         </div>
-        <div className="atri_peri">
-          <div id="atributos" className="atributos">
-            <div className="atributo box">
-              <h2 className="title_content">FOR</h2>
+        <div className={classStyled.atri_peri}>
+          <div id="atributos" className={classStyled.atributos}>
+            <div className={classStyled.atributo + " box"}>
+              <h2 className={classStyled.title_content + " title_content"}>
+                FOR
+              </h2>
               <input
                 type="text"
                 maxLength="2"
@@ -401,8 +386,10 @@ export default function Character({
                 onChange={handleChange}
               />
             </div>
-            <div className="atributo box">
-              <h2 className="title_content">INT</h2>
+            <div className={classStyled.atributo + " box"}>
+              <h2 className={classStyled.title_content + " title_content"}>
+                INT
+              </h2>
               <input
                 type="text"
                 maxLength="2"
@@ -412,8 +399,10 @@ export default function Character({
                 onChange={handleChange}
               />
             </div>
-            <div className="atributo box">
-              <h2 className="title_content">AGI</h2>
+            <div className={classStyled.atributo + " box"}>
+              <h2 className={classStyled.title_content + " title_content"}>
+                AGI
+              </h2>
               <input
                 type="text"
                 maxLength="2"
@@ -423,8 +412,10 @@ export default function Character({
                 onChange={handleChange}
               />
             </div>
-            <div className="atributo box">
-              <h2 className="title_content">VIG</h2>
+            <div className={classStyled.atributo + " box"}>
+              <h2 className={classStyled.title_content + " title_content"}>
+                VIG
+              </h2>
               <input
                 type="text"
                 maxLength="2"
@@ -434,8 +425,10 @@ export default function Character({
                 onChange={handleChange}
               />
             </div>
-            <div className="atributo box">
-              <h2 className="title_content">CAR</h2>
+            <div className={classStyled.atributo + " box"}>
+              <h2 className={classStyled.title_content + " title_content"}>
+                CAR
+              </h2>
               <input
                 type="text"
                 maxLength="2"
@@ -446,15 +439,20 @@ export default function Character({
               />
             </div>
           </div>
-          <div className="pericias box">
-            <h2 className="title_content">Perícias</h2>
-            <div id="periciaScroll" className="pericia_content overflow">
-              <table className="table tablePer" id="tablePer">
-                <thead className="thead-dark">
+          <div className={classStyled.pericias + " box"}>
+            <h2 className={classStyled.title_content + " title_content"}>
+              Perícias
+            </h2>
+            <div
+              id="periciaScroll"
+              className={classStyled.pericia_content + " overflow"}
+            >
+              <table className="table" id="tablePer">
+                <thead className={classStyled.theadark}>
                   <tr>
                     <th className="thNumber">Total</th>
-                    <th className="thPer">Perícia</th>
-                    <th className="thAtr">Atributos</th>
+                    <th className={classStyled.thPer}>Perícia</th>
+                    <th className={classStyled.thAtr}>Atributos</th>
                     <th className="thNumber">
                       1/2
                       <br />
@@ -467,12 +465,12 @@ export default function Character({
                 <tbody id="tBodyPer">
                   {formData.pericias.map((pericia, index) => (
                     <tr key={index}>
-                      <td className="tdsoma">
+                      <td className={classStyled.tdsoma}>
                         <p>{pericia.soma}</p>
                       </td>
                       <td>
                         <select
-                          className="form-select"
+                          className="form_select"
                           name={`nomePericia`}
                           type="text"
                           value={pericia.nomePericia}
@@ -494,8 +492,7 @@ export default function Character({
                         <select
                           name="atributoPer"
                           onChange={(e) => changePericia(e, index)}
-                          className="form-select"
-                          value={pericia.atributoPer} // Controla o valor selecionado
+                          className="form_select"
                         >
                           <option value="FOR">FOR {formData.forca}</option>
                           <option value="INT">
@@ -507,7 +504,7 @@ export default function Character({
                         </select>
                       </td>
                       <td>
-                        <p className="textDefRes">
+                        <p className="textTable">
                           {parseInt(formData.niv / 2 || 0)}
                         </p>
                       </td>
@@ -520,9 +517,9 @@ export default function Character({
                         />
                       </td>
                       <td>
-                        <VscDash
-                          className="remove"
+                        <RemoveItem
                           onClick={() => handlePericiaRemove(index)}
+                          type={"button"}
                         />
                       </td>
                     </tr>
@@ -540,281 +537,281 @@ export default function Character({
           </div>
         </div>
       </div>
-    </CharacterStyled>
+    </section>
   );
 }
 
-const CharacterStyled = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  width: 100%;
-  padding-top: 4em;
+// const CharacterStyled = styled.section`
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+//   height: 100%;
+//   width: 100%;
+//   padding-top: 4em;
 
-  .sobre_personagem {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-    height: 100%;
-  }
+//   .sobre_personagem {
+//     display: flex;
+//     justify-content: space-between;
+//     gap: 10px;
+//     width: 100%;
+//     height: 100%;
+//   }
 
-  .informacoes_status {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+//   .informacoes_status {
+//     display: flex;
+//     flex-direction: column;
+//     gap: 10px;
+//   }
 
-  .div-inf_stat {
-    display: flex;
-    gap: 10px;
-  }
+//   .div-inf_stat {
+//     display: flex;
+//     gap: 10px;
+//   }
 
-  .informacoes_perso {
-    width: 100%;
-  }
+//   .informacoes_perso {
+//     width: 100%;
+//   }
 
-  .informacoes_perso .title_content {
-    padding: 1em;
-  }
+//   .informacoes_perso .title_content {
+//     padding: 1em;
+//   }
 
-  .content_perso {
-    display: flex;
-    gap: 7px;
-    flex-direction: column;
-    margin: 0.5em;
-  }
+//   .content_perso {
+//     display: flex;
+//     gap: 7px;
+//     flex-direction: column;
+//     margin: 0.5em;
+//   }
 
-  .inf_item {
-    display: flex;
-    flex-direction: column;
-    text-transform: uppercase;
-    font-size: 9px;
-    font-weight: 700;
-  }
+//   .inf_item {
+//     display: flex;
+//     flex-direction: column;
+//     text-transform: uppercase;
+//     font-size: 9px;
+//     font-weight: 700;
+//   }
 
-  .status {
-    width: 100%;
-  }
+//   .status {
+//     width: 100%;
+//   }
 
-  .status_content {
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
+//   .status_content {
+//     gap: 10px;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: space-between;
+//   }
 
-  .if_status {
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
+//   .if_status {
+//     display: flex;
+//     align-items: center;
+//     height: 100%;
+//   }
 
-  .status .title_content {
-    width: 6em;
-  }
+//   .status .title_content {
+//     width: 6em;
+//   }
 
-  .content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 0 0.5em;
-  }
+//   .content {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     width: 100%;
+//     padding: 0 0.5em;
+//   }
 
-  .content input {
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 15px;
-    width: 100%;
-    height: 100%;
-    padding: 0.5em;
-    font-weight: 700;
-  }
+//   .content input {
+//     text-align: center;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     font-size: 15px;
+//     width: 100%;
+//     height: 100%;
+//     padding: 0.5em;
+//     font-weight: 700;
+//   }
 
-  .carac_personagem {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    height: 100%;
-  }
+//   .carac_personagem {
+//     display: flex;
+//     flex-direction: column;
+//     gap: 10px;
+//     height: 100%;
+//   }
 
-  .caracteristica {
-    height: 100%;
-  }
+//   .caracteristica {
+//     height: 100%;
+//   }
 
-  .resistencia_foto {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 44em;
-  }
+//   .resistencia_foto {
+//     display: flex;
+//     flex-direction: column;
+//     gap: 10px;
+//     width: 44em;
+//   }
 
-  .resistencia {
-    display: flex;
-    align-items: center;
-  }
+//   .resistencia {
+//     display: flex;
+//     align-items: center;
+//   }
 
-  .resistencia .title_content {
-    padding: 1em;
-  }
+//   .resistencia .title_content {
+//     padding: 1em;
+//   }
 
-  .resistencia input {
-    margin: 0.5em;
-    height: 2.5em;
-    width: 100%;
-  }
+//   .resistencia input {
+//     margin: 0.5em;
+//     height: 2.5em;
+//     width: 100%;
+//   }
 
-  .imagem_perso {
-    height: 40em;
-    width: 100%;
-    text-align: center;
-  }
+//   .imagem_perso {
+//     height: 40em;
+//     width: 100%;
+//     text-align: center;
+//   }
 
-  .imagem_perso img {
-    height: auto;
-    cursor: pointer;
-    text-align: center;
-  }
+//   .imagem_perso img {
+//     height: auto;
+//     cursor: pointer;
+//     text-align: center;
+//   }
 
-  .imagem_perso input {
-    display: none;
-  }
+//   .imagem_perso input {
+//     display: none;
+//   }
 
-  .imagem_perso .icon {
-    font-size: 30px;
-  }
+//   .imagem_perso .icon {
+//     font-size: 30px;
+//   }
 
-  #imagemContainer {
-    position: relative;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    padding: 1em;
-    height: 100%;
-  }
+//   #imagemContainer {
+//     position: relative;
+//     height: auto;
+//     display: flex;
+//     justify-content: center;
+//     padding: 1em;
+//     height: 100%;
+//   }
 
-  .custom-file-upload {
-    font-weight: 400;
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    margin: 1em;
-    border: 2px dashed var(--color-3);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background ease-in-out 0.5s;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
+//   .custom-file-upload {
+//     font-weight: 400;
+//     position: absolute;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     overflow: hidden;
+//     margin: 1em;
+//     border: 2px dashed var(--color-3);
+//     border-radius: 10px;
+//     cursor: pointer;
+//     transition: background ease-in-out 0.5s;
+//     top: 0;
+//     bottom: 0;
+//     left: 0;
+//     right: 0;
+//   }
 
-  .custom-file-upload:hover {
-    border: 2px dashed var(--color-4);
-    background-color: rgba(129, 129, 129, 0.2);
-  }
+//   .custom-file-upload:hover {
+//     border: 2px dashed var(--color-4);
+//     background-color: rgba(129, 129, 129, 0.2);
+//   }
 
-  .degrade {
-    font-weight: 600;
-    position: absolute;
-    transform: translateY(0.5em);
-    display: flex;
-    align-items: center;
-    font-size: 15px;
-    padding: 0.3em 10em 0.3em 1em;
-    justify-content: center;
-    color: var(--white);
-    background: rgb(255, 0, 0);
-    background: -moz-linear-gradient(
-      90deg,
-      rgba(255, 0, 0, 0.5) 0%,
-      rgba(255, 0, 0, 0.5) 50%,
-      rgba(255, 0, 0, 0) 100%
-    );
-    background: -webkit-linear-gradient(
-      90deg,
-      rgba(255, 0, 0, 0.5) 0%,
-      rgba(255, 0, 0, 0.5) 50%,
-      rgba(255, 0, 0, 0) 100%
-    );
-    background: linear-gradient(
-      90deg,
-      rgba(255, 0, 0, 0.5) 0%,
-      rgba(255, 0, 0, 0.5) 50%,
-      rgba(255, 0, 0, 0) 100%
-    );
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff0000",endColorstr="#ff0000",GradientType=1);
-    animation: fade 2s infinite;
-  }
+//   .degrade {
+//     font-weight: 600;
+//     position: absolute;
+//     transform: translateY(0.5em);
+//     display: flex;
+//     align-items: center;
+//     font-size: 15px;
+//     padding: 0.3em 10em 0.3em 1em;
+//     justify-content: center;
+//     color: var(--white);
+//     background: rgb(255, 0, 0);
+//     background: -moz-linear-gradient(
+//       90deg,
+//       rgba(255, 0, 0, 0.5) 0%,
+//       rgba(255, 0, 0, 0.5) 50%,
+//       rgba(255, 0, 0, 0) 100%
+//     );
+//     background: -webkit-linear-gradient(
+//       90deg,
+//       rgba(255, 0, 0, 0.5) 0%,
+//       rgba(255, 0, 0, 0.5) 50%,
+//       rgba(255, 0, 0, 0) 100%
+//     );
+//     background: linear-gradient(
+//       90deg,
+//       rgba(255, 0, 0, 0.5) 0%,
+//       rgba(255, 0, 0, 0.5) 50%,
+//       rgba(255, 0, 0, 0) 100%
+//     );
+//     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff0000",endColorstr="#ff0000",GradientType=1);
+//     animation: fade 2s infinite;
+//   }
 
-  @keyframes fade {
-    0% {
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-  .atri_peri {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 80%;
-  }
+//   @keyframes fade {
+//     0% {
+//       opacity: 0;
+//     }
+//     50% {
+//       opacity: 1;
+//     }
+//     100% {
+//       opacity: 0;
+//     }
+//   }
+//   .atri_peri {
+//     display: flex;
+//     flex-direction: column;
+//     gap: 10px;
+//     width: 80%;
+//   }
 
-  .atributos {
-    width: 100%;
-    display: flex;
-    gap: 10px;
-    justify-content: space-between;
-  }
+//   .atributos {
+//     width: 100%;
+//     display: flex;
+//     gap: 10px;
+//     justify-content: space-between;
+//   }
 
-  .atributos input {
-    width: calc(100% - 1em);
-    font-size: 17px;
-    margin: 0.5em;
-    text-align: center;
-    font-weight: 700;
-  }
-  .pericias {
-    text-align: center;
-    height: 100%;
-  }
+//   .atributos input {
+//     width: calc(100% - 1em);
+//     font-size: 17px;
+//     margin: 0.5em;
+//     text-align: center;
+//     font-weight: 700;
+//   }
+//   .pericias {
+//     text-align: center;
+//     height: 100%;
+//   }
 
-  .pericia_content {
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 0.2em;
-    height: 32.5em;
-  }
+//   .pericia_content {
+//     overflow-x: hidden;
+//     overflow-y: auto;
+//     padding: 0.2em;
+//     height: 32.5em;
+//   }
 
-  .thPer {
-    width: 18em;
-  }
+//   .thPer {
+//     width: 18em;
+//   }
 
-  .tdsoma {
-    background-color: var(--color-3);
-    border-radius: 10em;
-    position: relative;
-    height: 2em;
-    width: 2em;
-    display: block;
-    line-height: 2em;
-  }
+//   .tdsoma {
+//     background-color: var(--color-3);
+//     border-radius: 10em;
+//     position: relative;
+//     height: 2em;
+//     width: 2em;
+//     display: block;
+//     line-height: 2em;
+//   }
 
-  .tdsoma p {
-    color: var(--white);
-    left: 0;
-    right: 0;
-    position: absolute;
-  }
-`;
+//   .tdsoma p {
+//     color: var(--white);
+//     left: 0;
+//     right: 0;
+//     position: absolute;
+//   }
+// `;
