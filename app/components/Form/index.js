@@ -1,5 +1,7 @@
 "use client";
 import {
+  Alert,
+  AlertTitle,
   Button,
   Checkbox,
   FormControlLabel,
@@ -10,6 +12,8 @@ import {
 import classStyled from "./form.module.css";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
+import { signIn, signUp } from "@/pages/api/auth";
+import Link from "next/link";
 
 const textFieldStyles = {
   "& .MuiInputLabel-root": { color: "#a1a1a1" },
@@ -30,7 +34,13 @@ const textFieldStyles = {
   },
 };
 
-export default function Form({ fields, titleForm }) {
+export default function Form({
+  fields,
+  titleForm,
+  sendCredentials,
+  warning,
+  setWarning,
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState({});
   const [formData, setFormData] = useState({
@@ -54,6 +64,7 @@ export default function Form({ fields, titleForm }) {
       [id]: "",
     }));
   };
+
   const handleCheckboxChange = (e) => {
     const { checked } = e.target;
     setFormData({
@@ -67,30 +78,36 @@ export default function Form({ fields, titleForm }) {
     let valid = true;
 
     fields.forEach((field) => {
+      const value = formData[field.id]; // Pega o valor do campo
+
       if (field.id === "email") {
+        // 🔹 Validação de Email
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (formData[field.id] === "") {
+        if (!value) {
           newError[field.id] = `${field.label} é obrigatório!`;
           valid = false;
-        } else if (!emailRegex.test(formData[field.id])) {
+        } else if (!emailRegex.test(value)) {
           newError[field.id] = "Por favor, insira um email válido!";
           valid = false;
-        } else {
-          newError[field.id] = "";
         }
-      } else if (field.field === "TextField" && formData[field.id] === "") {
-        newError[field.id] = `${field.label} é obrigatório!`;
-        valid = false;
-      } else if (field.field === "TextField" && formData[field.id].length < 3) {
-        newError[
-          field.id
-        ] = `${field.label} possui poucos caracteres! (mínimo de 3)`;
-        valid = false;
-      } else {
-        newError[field.id] = "";
-      }
-      if (!newError[field.id]) {
-        newError[field.id] = "";
+      } else if (field.id === "password") {
+        if (!value) {
+          newError[field.id] = "A senha é obrigatória!";
+          valid = false;
+        } else if (value.length < 6) {
+          newError[field.id] = "A senha deve ter pelo menos 6 caracteres!";
+          valid = false;
+        }
+      } else if (field.field === "TextField") {
+        if (!value) {
+          newError[field.id] = `${field.label} é obrigatório!`;
+          valid = false;
+        } else if (value.length < 3) {
+          newError[
+            field.id
+          ] = `${field.label} possui poucos caracteres! (mínimo de 3)`;
+          valid = false;
+        }
       }
     });
 
@@ -103,7 +120,7 @@ export default function Form({ fields, titleForm }) {
 
     if (!validateForm()) return;
 
-    console.log({ Susses: formData });
+    sendCredentials(formData);
   };
 
   return (
@@ -115,7 +132,19 @@ export default function Form({ fields, titleForm }) {
         <h1 style={{ fontSize: 25 }} className="title_content">
           {titleForm}
         </h1>
+
         <div className={classStyled.content}>
+          {" "}
+          {warning.active && (
+            <Alert
+              severity="error"
+              variant="outlined"
+              onClose={() => setWarning({ active: false })}
+            >
+              <AlertTitle>{warning.erroTitle}</AlertTitle>
+              {String(warning.errorMessage)}
+            </Alert>
+          )}
           {fields.map((item) => {
             if (item.field === "TextField") {
               return (
@@ -198,6 +227,10 @@ export default function Form({ fields, titleForm }) {
 
             return null;
           })}
+          <p className={classStyled.textRedirect}>
+            {titleForm !== "LOGAR" && "Já é cadastrado? Entre"}
+            {titleForm === "LOGAR" && "Ainda não se Cadastrou? Cadastre-se!"}
+          </p>
         </div>
       </form>
     </div>

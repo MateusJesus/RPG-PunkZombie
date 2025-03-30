@@ -22,3 +22,8 @@
   flex-direction: column;
   padding: 1em;
 }
+
+.textRedirect{
+  text-align: center;
+  font-weight: 200;
+}

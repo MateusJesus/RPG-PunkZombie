@@ -10,6 +10,9 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Box, IconButton } from "@mui/material";
 import { Favorite } from "@mui/icons-material";
+import { signUp, signIn } from "@/pages/api/auth";
+
+
 
 export default function Home() {
   const [fichas, setFichas] = useState([
