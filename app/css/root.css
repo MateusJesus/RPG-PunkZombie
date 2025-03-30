@@ -20,6 +20,8 @@
   --text-color: #292929;
   --text-color_1: #efefef;
   --white: #fff;
+  --green: #76b95f;
+  --green-hover: #538841;
 }
 
 .dark_mode {
@@ -31,4 +33,6 @@
   --title-color: #ababab;
   --text-color: #adadad;
   --white: #e8e8e8;
+  --green: #76b95f;
+  --green-hover: #538841;
 }

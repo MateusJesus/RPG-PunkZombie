@@ -15,29 +15,29 @@ export default function Character({
   useEffect(() => {
     calcularPer();
   }, [
-    formData.forca,
-    formData.agilidade,
-    formData.vigor,
-    formData.carisma,
-    formData.inteligencia,
-    formData.niv,
+    formData.atributos.atri_for,
+    formData.atributos.atri_int,
+    formData.atributos.atri_car,
+    formData.atributos.atri_vig,
+    formData.atributos.atri_agi,
+    formData.status.status_niv,
   ]);
 
   const calcularPer = () => {
     setFormData((prevFormData) => {
-      const updatedPericias = prevFormData.pericias.map((pericia) => ({
+      const updatedPericias = prevFormData.pericias?.map((pericia) => ({
         ...pericia,
         soma:
           (Number(
-            (pericia.atributoPer === "FOR" && formData.forca) ||
-              (pericia.atributoPer === "AGI" && formData.agilidade) ||
-              (pericia.atributoPer === "INT" && formData.inteligencia) ||
-              (pericia.atributoPer === "VIG" && formData.vigor) ||
-              (pericia.atributoPer === "CAR" && formData.carisma) ||
-              (pericia.atributoPer === "" && formData.forca)
+            (pericia.atributoPer === "FOR" && formData.atributos.atri_for) ||
+              (pericia.atributoPer === "AGI" && formData.atributos.atri_agi) ||
+              (pericia.atributoPer === "INT" && formData.atributos.atri_int) ||
+              (pericia.atributoPer === "VIG" && formData.atributos.atri_vig) ||
+              (pericia.atributoPer === "CAR" && formData.atributos.atri_car) ||
+              (pericia.atributoPer === "" && formData.atributos.atri_for)
           ) || 0) +
           2 +
-          (parseInt(prevFormData.niv / 2 || 0) || 0) +
+          (parseInt(prevFormData.status.status_niv / 2 || 0) || 0) +
           (Number(pericia.outros) || 0),
       }));
       return { ...prevFormData, pericias: updatedPericias };
@@ -48,7 +48,7 @@ export default function Character({
     const { name, value } = e.target;
 
     setFormData((prevFormData) => {
-      const updatedPericias = prevFormData.pericias.map((pericia, idx) => {
+      const updatedPericias = prevFormData.pericias?.map((pericia, idx) => {
         if (idx === index) {
           return {
             ...pericia,
@@ -70,7 +70,7 @@ export default function Character({
         ...formData.pericias,
         {
           soma: 2,
-          nomePericia: 0,
+          nomePericia: "",
           atributoPer: "",
           outros: 0,
         },
@@ -140,10 +140,10 @@ export default function Character({
                   <label htmlFor="nomeJogador">Nome do Jogador:</label>
                   <input
                     maxLength="20"
-                    id="nomeJogador"
-                    name="nomeJogador"
+                    id="nomeJogador" // Adicionei o id correspondente ao htmlFor no label
+                    name="informacoes.nome_jogador"
                     type="text"
-                    value={formData.nomeJogador}
+                    value={formData.informacoes.nome_jogador}
                     onChange={handleChange}
                   />
                 </div>
@@ -151,20 +151,20 @@ export default function Character({
                   <label htmlFor="variante">Variante:</label>
                   <input
                     maxLength="15"
-                    id="variante"
-                    name="variante"
+                    id="variante" // Adicionei o id correspondente ao htmlFor no label
+                    name="informacoes.variante"
                     type="text"
-                    value={formData.variante}
+                    value={formData.informacoes.variante}
                     onChange={handleChange}
                   />
                 </div>
                 <div className={classStyled.inf_item}>
                   <label htmlFor="origem">Origem:</label>
                   <input
-                    id="origem"
-                    name="origem"
+                    id="origem" // Adicionei o id correspondente ao htmlFor no label
+                    name="informacoes.origem"
                     type="text"
-                    value={formData.origem}
+                    value={formData.informacoes.origem}
                     onChange={handleChange}
                   />
                 </div>
@@ -172,20 +172,20 @@ export default function Character({
                   <label htmlFor="classe">Classe:</label>
                   <input
                     id="classe"
-                    name="classe"
+                    name="informacoes.classe"
                     type="text"
-                    value={formData.classe}
+                    value={formData.informacoes.classe}
                     onChange={handleChange}
                   />
                 </div>
                 <div className={classStyled.inf_item}>
-                  <label htmlFor="resistPer">Resistencia:</label>
+                  <label htmlFor="resistPer">Resistência:</label>
                   <input
                     maxLength="30"
                     id="resistPer"
-                    name="resistPer"
+                    name="informacoes.resistencia"
                     type="text"
-                    value={formData.resistencia}
+                    value={formData.informacoes.resistencia}
                     onChange={handleChange}
                   />
                 </div>
@@ -202,9 +202,8 @@ export default function Character({
                       maxLength="2"
                       className={classStyled.input_num}
                       type="text"
-                      name="niv"
-                      id="status_niv"
-                      value={formData.niv}
+                      name="status.status_niv"
+                      value={formData.status.status_niv}
                       onChange={handleChange}
                     />
                   </div>
@@ -218,9 +217,8 @@ export default function Character({
                       maxLength="2"
                       className={classStyled.input_num}
                       type="text"
-                      name="pdv"
-                      id="status_pdv"
-                      value={formData.pdv}
+                      name="status.status_pdv"
+                      value={formData.status.status_pdv}
                       onChange={handleChange}
                     />
                     <hr />
@@ -228,9 +226,8 @@ export default function Character({
                       maxLength="2"
                       className={classStyled.input_num}
                       type="text"
-                      name="pdvTotal"
-                      id="status_pdvtot"
-                      value={formData.pdvTotal}
+                      name="status.status_pdvtot"
+                      value={formData.status.status_pdvtot}
                       onChange={handleChange}
                     />
                   </div>
@@ -244,9 +241,8 @@ export default function Character({
                       maxLength="2"
                       className={classStyled.input_num}
                       type="text"
-                      name="sta"
-                      id="status_sta"
-                      value={formData.sta}
+                      name="status.status_sta"
+                      value={formData.status.status_sta}
                       onChange={handleChange}
                     />
                     <hr />
@@ -254,9 +250,8 @@ export default function Character({
                       maxLength="2"
                       className={classStyled.input_num}
                       type="text"
-                      name="staTotal"
-                      id="status_statot"
-                      value={formData.staTotal}
+                      name="status.status_statot"
+                      value={formData.status.status_statot}
                       onChange={handleChange}
                     />
                   </div>
@@ -270,9 +265,8 @@ export default function Character({
                       maxLength="2"
                       className={classStyled.input_num}
                       type="text"
-                      name="pdi"
-                      id="status_pdi"
-                      value={formData.pdi}
+                      name="status.status_pdi"
+                      value={formData.status.status_pdi}
                       onChange={handleChange}
                     />
                     <hr />
@@ -280,9 +274,8 @@ export default function Character({
                       maxLength="2"
                       className={classStyled.input_num}
                       type="text"
-                      name="pdiTotal"
-                      id="status_pditot"
-                      value={formData.pdiTotal}
+                      name="status.status_pditot"
+                      value={formData.status.status_pditot}
                       onChange={handleChange}
                     />
                   </div>
@@ -293,10 +286,9 @@ export default function Character({
                   </h2>
                   <div className={classStyled.content}>
                     <IoShieldSharp className={classStyled.res_defesa} />
-                    <p className={classStyled.res_defesa_txt} id="res_defesa">
-                      {formData.defesa}
+                    <p className={classStyled.res_defesa_txt}>
+                      {formData.defesa.defesatot}
                     </p>
-                    <input type="hidden" name="defesaTotal" id="defesaTotal" />
                   </div>
                 </div>
               </div>
@@ -306,22 +298,20 @@ export default function Character({
             <div className={classStyled.caracteristica + " box"}>
               <h2 className="title_content">Aparência</h2>
               <textarea
-                name="aparencia"
-                id="aparencia"
+                name="caracteristicas.aparencia"
                 cols="30"
                 rows="5"
-                value={formData.aparencia}
+                value={formData.caracteristicas.aparencia}
                 onChange={handleChange}
               ></textarea>
             </div>
             <div className={classStyled.caracteristica + " box"}>
               <h2 className="title_content">Personalidade</h2>
               <textarea
-                name="personalidade"
-                id="personalidade"
+                name="caracteristicas.personalidade"
                 cols="30"
                 rows="5"
-                value={formData.personalidade}
+                value={formData.caracteristicas.personalidade}
                 onChange={handleChange}
               ></textarea>
             </div>
@@ -334,26 +324,20 @@ export default function Character({
             </h2>
             <input
               type="text"
-              name="nomePersonagem"
-              id="resist_perso"
-              value={formData.nomePersonagem}
+              name="informacoes.nome_personagem"
+              value={formData.informacoes.nome_personagem}
               onChange={handleChange}
             />
           </div>
           <div className={classStyled.imagem_perso + " box"}>
             {formData.imagem ? (
-              <img
-                id="img_personagem"
-                src={formData.imagem || "sd"}
-                alt="Imagem do personagem"
-              />
+              <img src={formData.imagem || ""} alt="Imagem do personagem" />
             ) : (
               <label
                 htmlFor="inputImgPerso"
-                id="customFileUpload"
                 className={classStyled.custom_file_upload}
               >
-                <span id="spanFileUpload">
+                <span>
                   <FaFileImage className={classStyled.icon} />
                   <br />
                   Clique ou arraste e
@@ -361,9 +345,9 @@ export default function Character({
                   solte sua imagem aqui.
                 </span>
                 <input
+                  id="inputImgPerso"
                   type="file"
                   name="inputImgPerso"
-                  id="inputImgPerso"
                   accept=".jpg, .jpeg, .png"
                   onChange={handleImageChange}
                 />
@@ -372,7 +356,7 @@ export default function Character({
           </div>
         </div>
         <div className={classStyled.atri_peri}>
-          <div id="atributos" className={classStyled.atributos}>
+          <div className={classStyled.atributos}>
             <div className={classStyled.atributo + " box"}>
               <h2 className={classStyled.title_content + " title_content"}>
                 FOR
@@ -380,9 +364,8 @@ export default function Character({
               <input
                 type="text"
                 maxLength="2"
-                name="forca"
-                id="atri_for"
-                value={formData.forca}
+                name="atributos.atri_for"
+                value={formData.atributos.atri_for}
                 onChange={handleChange}
               />
             </div>
@@ -393,9 +376,8 @@ export default function Character({
               <input
                 type="text"
                 maxLength="2"
-                name="inteligencia"
-                id="atri_int"
-                value={formData.inteligencia}
+                name="atributos.atri_int"
+                value={formData.atributos.atri_int}
                 onChange={handleChange}
               />
             </div>
@@ -406,9 +388,8 @@ export default function Character({
               <input
                 type="text"
                 maxLength="2"
-                name="agilidade"
-                id="atri_agi"
-                value={formData.agilidade}
+                name="atributos.atri_agi"
+                value={formData.atributos.atri_agi}
                 onChange={handleChange}
               />
             </div>
@@ -419,9 +400,8 @@ export default function Character({
               <input
                 type="text"
                 maxLength="2"
-                name="vigor"
-                id="atri_vig"
-                value={formData.vigor}
+                name="atributos.atri_vig"
+                value={formData.atributos.atri_vig}
                 onChange={handleChange}
               />
             </div>
@@ -432,9 +412,8 @@ export default function Character({
               <input
                 type="text"
                 maxLength="2"
-                name="carisma"
-                id="atri_car"
-                value={formData.carisma}
+                name="atributos.atri_car"
+                value={formData.atributos.atri_car}
                 onChange={handleChange}
               />
             </div>
@@ -443,11 +422,8 @@ export default function Character({
             <h2 className={classStyled.title_content + " title_content"}>
               Perícias
             </h2>
-            <div
-              id="periciaScroll"
-              className={classStyled.pericia_content + " overflow"}
-            >
-              <table className="table" id="tablePer">
+            <div className={classStyled.pericia_content + " overflow"}>
+              <table className="table">
                 <thead className={classStyled.theadark}>
                   <tr>
                     <th className="thNumber">Total</th>
@@ -462,8 +438,8 @@ export default function Character({
                     <th className="thNumber thUltimo"></th>
                   </tr>
                 </thead>
-                <tbody id="tBodyPer">
-                  {formData.pericias.map((pericia, index) => (
+                <tbody>
+                  {formData.pericias?.map((pericia, index) => (
                     <tr key={index}>
                       <td className={classStyled.tdsoma}>
                         <p>{pericia.soma}</p>
@@ -471,7 +447,7 @@ export default function Character({
                       <td>
                         <select
                           className="form_select"
-                          name={`nomePericia`}
+                          name="nomePericia"
                           type="text"
                           value={pericia.nomePericia}
                           onChange={(e) => changePericia(e, index)}
@@ -481,7 +457,7 @@ export default function Character({
                               (option) =>
                                 option.value === (pericia.atributoPer || "FOR")
                             )
-                            .map((option, index) => (
+                            ?.map((option, index) => (
                               <option key={index} value={index}>
                                 {option.label}
                               </option>
@@ -493,19 +469,29 @@ export default function Character({
                           name="atributoPer"
                           onChange={(e) => changePericia(e, index)}
                           className="form_select"
+                          value={pericia.atributoPer}
                         >
-                          <option value="FOR">FOR {formData.forca}</option>
-                          <option value="INT">
-                            INT {formData.inteligencia}
+                          <option value="FOR">
+                            FOR {formData.atributos.atri_for || 0}
                           </option>
-                          <option value="AGI">AGI {formData.agilidade}</option>
-                          <option value="VIG">VIG {formData.vigor}</option>
-                          <option value="CAR">CAR {formData.carisma}</option>
+                          <option value="INT">
+                            INT {formData.atributos.atri_int || 0}
+                          </option>
+                          <option value="AGI">
+                            AGI {formData.atributos.atri_agi || 0}
+                          </option>
+                          <option value="VIG">
+                            VIG {formData.atributos.atri_vig || 0}
+                          </option>
+                          <option value="CAR">
+                            CAR {formData.atributos.atri_car || 0}
+                          </option>
                         </select>
                       </td>
+
                       <td>
                         <p className="textTable">
-                          {parseInt(formData.niv / 2 || 0)}
+                          {parseInt(formData.status.status_niv / 2 || 0)}
                         </p>
                       </td>
                       <td>
@@ -540,278 +526,3 @@ export default function Character({
     </section>
   );
 }
-
-// const CharacterStyled = styled.section`
-//   display: flex;
-//   flex-direction: column;
-//   gap: 10px;
-//   height: 100%;
-//   width: 100%;
-//   padding-top: 4em;
-
-//   .sobre_personagem {
-//     display: flex;
-//     justify-content: space-between;
-//     gap: 10px;
-//     width: 100%;
-//     height: 100%;
-//   }
-
-//   .informacoes_status {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 10px;
-//   }
-
-//   .div-inf_stat {
-//     display: flex;
-//     gap: 10px;
-//   }
-
-//   .informacoes_perso {
-//     width: 100%;
-//   }
-
-//   .informacoes_perso .title_content {
-//     padding: 1em;
-//   }
-
-//   .content_perso {
-//     display: flex;
-//     gap: 7px;
-//     flex-direction: column;
-//     margin: 0.5em;
-//   }
-
-//   .inf_item {
-//     display: flex;
-//     flex-direction: column;
-//     text-transform: uppercase;
-//     font-size: 9px;
-//     font-weight: 700;
-//   }
-
-//   .status {
-//     width: 100%;
-//   }
-
-//   .status_content {
-//     gap: 10px;
-//     display: flex;
-//     flex-direction: column;
-//     justify-content: space-between;
-//   }
-
-//   .if_status {
-//     display: flex;
-//     align-items: center;
-//     height: 100%;
-//   }
-
-//   .status .title_content {
-//     width: 6em;
-//   }
-
-//   .content {
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     width: 100%;
-//     padding: 0 0.5em;
-//   }
-
-//   .content input {
-//     text-align: center;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     font-size: 15px;
-//     width: 100%;
-//     height: 100%;
-//     padding: 0.5em;
-//     font-weight: 700;
-//   }
-
-//   .carac_personagem {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 10px;
-//     height: 100%;
-//   }
-
-//   .caracteristica {
-//     height: 100%;
-//   }
-
-//   .resistencia_foto {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 10px;
-//     width: 44em;
-//   }
-
-//   .resistencia {
-//     display: flex;
-//     align-items: center;
-//   }
-
-//   .resistencia .title_content {
-//     padding: 1em;
-//   }
-
-//   .resistencia input {
-//     margin: 0.5em;
-//     height: 2.5em;
-//     width: 100%;
-//   }
-
-//   .imagem_perso {
-//     height: 40em;
-//     width: 100%;
-//     text-align: center;
-//   }
-
-//   .imagem_perso img {
-//     height: auto;
-//     cursor: pointer;
-//     text-align: center;
-//   }
-
-//   .imagem_perso input {
-//     display: none;
-//   }
-
-//   .imagem_perso .icon {
-//     font-size: 30px;
-//   }
-
-//   #imagemContainer {
-//     position: relative;
-//     height: auto;
-//     display: flex;
-//     justify-content: center;
-//     padding: 1em;
-//     height: 100%;
-//   }
-
-//   .custom-file-upload {
-//     font-weight: 400;
-//     position: absolute;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     overflow: hidden;
-//     margin: 1em;
-//     border: 2px dashed var(--color-3);
-//     border-radius: 10px;
-//     cursor: pointer;
-//     transition: background ease-in-out 0.5s;
-//     top: 0;
-//     bottom: 0;
-//     left: 0;
-//     right: 0;
-//   }
-
-//   .custom-file-upload:hover {
-//     border: 2px dashed var(--color-4);
-//     background-color: rgba(129, 129, 129, 0.2);
-//   }
-
-//   .degrade {
-//     font-weight: 600;
-//     position: absolute;
-//     transform: translateY(0.5em);
-//     display: flex;
-//     align-items: center;
-//     font-size: 15px;
-//     padding: 0.3em 10em 0.3em 1em;
-//     justify-content: center;
-//     color: var(--white);
-//     background: rgb(255, 0, 0);
-//     background: -moz-linear-gradient(
-//       90deg,
-//       rgba(255, 0, 0, 0.5) 0%,
-//       rgba(255, 0, 0, 0.5) 50%,
-//       rgba(255, 0, 0, 0) 100%
-//     );
-//     background: -webkit-linear-gradient(
-//       90deg,
-//       rgba(255, 0, 0, 0.5) 0%,
-//       rgba(255, 0, 0, 0.5) 50%,
-//       rgba(255, 0, 0, 0) 100%
-//     );
-//     background: linear-gradient(
-//       90deg,
-//       rgba(255, 0, 0, 0.5) 0%,
-//       rgba(255, 0, 0, 0.5) 50%,
-//       rgba(255, 0, 0, 0) 100%
-//     );
-//     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff0000",endColorstr="#ff0000",GradientType=1);
-//     animation: fade 2s infinite;
-//   }
-
-//   @keyframes fade {
-//     0% {
-//       opacity: 0;
-//     }
-//     50% {
-//       opacity: 1;
-//     }
-//     100% {
-//       opacity: 0;
-//     }
-//   }
-//   .atri_peri {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 10px;
-//     width: 80%;
-//   }
-
-//   .atributos {
-//     width: 100%;
-//     display: flex;
-//     gap: 10px;
-//     justify-content: space-between;
-//   }
-
-//   .atributos input {
-//     width: calc(100% - 1em);
-//     font-size: 17px;
-//     margin: 0.5em;
-//     text-align: center;
-//     font-weight: 700;
-//   }
-//   .pericias {
-//     text-align: center;
-//     height: 100%;
-//   }
-
-//   .pericia_content {
-//     overflow-x: hidden;
-//     overflow-y: auto;
-//     padding: 0.2em;
-//     height: 32.5em;
-//   }
-
-//   .thPer {
-//     width: 18em;
-//   }
-
-//   .tdsoma {
-//     background-color: var(--color-3);
-//     border-radius: 10em;
-//     position: relative;
-//     height: 2em;
-//     width: 2em;
-//     display: block;
-//     line-height: 2em;
-//   }
-
-//   .tdsoma p {
-//     color: var(--white);
-//     left: 0;
-//     right: 0;
-//     position: absolute;
-//   }
-// `;
