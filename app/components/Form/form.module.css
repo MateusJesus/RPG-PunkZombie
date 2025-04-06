@@ -27,3 +27,10 @@
   text-align: center;
   font-weight: 200;
 }
+.textRedirect a {
+  color: var(--green);
+}
+.textRedirect a:hover {
+  color: var(--green-hover);
+  text-decoration: underline;
+}

@@ -15,13 +15,14 @@
   --color-2: #b5b5b5;
   --color-3: #414141;
   --color-4: #555555;
+  --font-title: "Abidas";
   --bg: #efefef;
   --title-color: #efefef;
   --text-color: #292929;
   --text-color_1: #efefef;
   --white: #fff;
   --green: #76b95f;
-  --green-hover: #538841;
+  --green-hover: #7ddc5e;
   --error: #cd2e2e;
 }
 
@@ -35,5 +36,5 @@
   --text-color: #adadad;
   --white: #e8e8e8;
   --green: #76b95f;
-  --green-hover: #538841;
+  --green-hover: #7ddc5e;
 }

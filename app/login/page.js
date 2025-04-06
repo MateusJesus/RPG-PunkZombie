@@ -1,9 +1,11 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import Form from "../components/Form";
 import { Alert, Backdrop, CircularProgress } from "@mui/material";
-import { signIn } from "@/pages/api/auth";
-import Link from "next/link";
+import { useAuth } from "../contexts/AuthContext"; 
+import { useRouter } from "next/navigation"; 
+import LoadingPage from "../components/Loading";
 
 const fields = [
   {
@@ -36,18 +38,35 @@ const fields = [
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [warning, setWarning] = useState({ active: false, errorMessage: "" });
+  const { user, signIn, redirectBack, loadingPage } = useAuth();
 
-  const sendCredentials = async (crecentials) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && !loadingPage) {
+      router.push("/");
+    }
+  }, [user, loadingPage, router]);
+
+  if (loadingPage) return <LoadingPage />;
+
+  if (user) return null;
+
+  const sendCredentials = async (credentials) => {
     setLoading(true);
-    const { username, email, password, keepConected } = crecentials;
+    const { email, password } = credentials;
+
     try {
       await signIn(email, password);
       console.log("Login realizado com sucesso!");
       setWarning({ active: false });
     } catch (error) {
       console.log(error);
-      const cleanErrorMessage = error.message.replace('Firebase: ', '');
-      setWarning({ active: true, erroTitle: "Erro ao se cadastrar: ", errorMessage: cleanErrorMessage });
+      setWarning({
+        active: true,
+        erroTitle: "Erro ao logar: ",
+        errorMessage: error.message.replace("Firebase: ", ""),
+      });
     } finally {
       setLoading(false);
     }
@@ -56,10 +75,7 @@ export default function Login() {
   return (
     <section>
       {loading && (
-        <Backdrop
-          sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-          open
-        >
+        <Backdrop sx={{ color: "#fff", zIndex: 999 }} open>
           <CircularProgress color="inherit" />
         </Backdrop>
       )}

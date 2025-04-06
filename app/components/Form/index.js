@@ -78,10 +78,9 @@ export default function Form({
     let valid = true;
 
     fields.forEach((field) => {
-      const value = formData[field.id]; // Pega o valor do campo
+      const value = formData[field.id]; 
 
       if (field.id === "email") {
-        // 🔹 Validação de Email
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!value) {
           newError[field.id] = `${field.label} é obrigatório!`;
@@ -227,10 +226,21 @@ export default function Form({
 
             return null;
           })}
-          <p className={classStyled.textRedirect}>
-            {titleForm !== "LOGAR" && "Já é cadastrado? Entre"}
-            {titleForm === "LOGAR" && "Ainda não se Cadastrou? Cadastre-se!"}
-          </p>
+          {titleForm !== "LOGAR" && (
+            <p className={classStyled.textRedirect}>
+              Já é cadastrado? <Link href={"/login"}>Entre!</Link>{" "}
+            </p>
+          )}
+          {titleForm === "LOGAR" && (
+            <p className={classStyled.textRedirect}>
+              Ainda não se Cadastrou? <Link href={"sign-in"}>Cadastre-se!</Link>
+            </p>
+          )}
+          {warning.active && (
+            <p className={classStyled.textRedirect}>
+              <Link href={"sign-in"}>Esqueci a senha!</Link>
+            </p>
+          )}
         </div>
       </form>
     </div>

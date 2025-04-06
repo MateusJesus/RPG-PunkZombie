@@ -3,7 +3,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-
 import { updateProfile } from "firebase/auth";
 
 export const signUp = async (email, senha, nome) => {

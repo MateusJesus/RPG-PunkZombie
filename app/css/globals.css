@@ -37,6 +37,14 @@ hr {
   border-radius: 10px;
 }
 
+.separation {
+  margin: 10px 0;
+  height: 1px;
+  border: none;
+  border-top: 1px solid var(--color-2);
+  width: 100%;
+}
+
 textarea {
   outline: none;
   border-radius: 5px;

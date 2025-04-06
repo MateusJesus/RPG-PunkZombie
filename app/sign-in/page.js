@@ -1,9 +1,10 @@
 "use client";
-import { signUp } from "@/pages/api/auth";
 import Form from "../components/Form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Backdrop, CircularProgress } from "@mui/material";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../contexts/AuthContext";
+import LoadingPage from "../components/Loading";
 
 const fields = [
   {
@@ -45,6 +46,18 @@ const fields = [
 export default function Singin() {
   const [loading, setLoading] = useState(false);
   const [warning, setWarning] = useState({ active: false, errorMessage: "" });
+  const { user, signUp, redirectBack, loadingPage } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && !loadingPage) {
+      router.push("/");
+    }
+  }, [user, loadingPage, router]);
+
+  if (loadingPage) return <LoadingPage />;
+
+  if (user) return null;
 
   const sendCredentials = async (crecentials) => {
     setLoading(true);

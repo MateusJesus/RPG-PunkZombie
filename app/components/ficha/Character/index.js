@@ -7,21 +7,10 @@ import { IoShieldSharp } from "react-icons/io5";
 import RemoveItem from "../../Buttons/RemoveItem";
 
 export default function Character({
-  handleImageChange,
   handleChange,
   formData,
   setFormData,
 }) {
-  useEffect(() => {
-    calcularPer();
-  }, [
-    formData.atributos.atri_for,
-    formData.atributos.atri_int,
-    formData.atributos.atri_car,
-    formData.atributos.atri_vig,
-    formData.atributos.atri_agi,
-    formData.status.status_niv,
-  ]);
 
   const calcularPer = () => {
     setFormData((prevFormData) => {
@@ -349,7 +338,7 @@ export default function Character({
                   type="file"
                   name="inputImgPerso"
                   accept=".jpg, .jpeg, .png"
-                  onChange={handleImageChange}
+                  //onChange={handleImageChange}
                 />
               </label>
             )}

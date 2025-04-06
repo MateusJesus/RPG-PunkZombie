@@ -12,7 +12,6 @@ export const criarFicha = async (userId, nomePersonagem, classe, atributos, publ
   });
 };
 
-// 🔹 Listar fichas públicas (comunidade)
 export const listarFichasPublicas = async () => {
   const fichasRef = collection(db, "fichas");
   const q = query(fichasRef, where("publica", "==", true));

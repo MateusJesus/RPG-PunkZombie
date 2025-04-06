@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   AppBar,
   Toolbar,
@@ -19,14 +20,16 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CampaignIcon from "@mui/icons-material/Campaign";
-import { Home } from "@mui/icons-material";
+import { AccountCircle, ExitToApp, Home } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   const toggleDrawer = (state) => () => {
     setOpen(state);
@@ -36,8 +39,6 @@ export default function Header() {
     switch (pathname) {
       case "/":
         return 0;
-      case "/favorites":
-        return 1;
       case "/campaigns":
         return 2;
       default:
@@ -46,7 +47,7 @@ export default function Header() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box>
       <AppBar
         position="fixed"
         sx={{
@@ -75,14 +76,13 @@ export default function Header() {
               <MenuIcon />
             </IconButton>
             <Typography>
-              <img
-                src="./assets/letreiro_punkzombie.png"
-                alt="Punkzombie"
-                style={{
-                  height: "50px",
-                  objectFit: "contain",
-                  marginLeft: 15,
-                }}
+              <Image
+                src="/assets/letreiro_punkzombie.png"
+                alt="Letreiro PunkZombie"
+                width={150}
+                height={40}
+                style={{ width: "auto", height: "50px", marginLeft: "15px" }}
+                priority
               />
             </Typography>
           </Box>
@@ -99,13 +99,13 @@ export default function Header() {
               sx={{ height: 70 }}
               label="Fichas"
             />
-            <Tab
+            {/* <Tab
               component={Link}
               href="/favorites"
               value={1}
               sx={{ height: 70 }}
               label="Favoritas"
-            />
+            /> */}
             <Tab
               component={Link}
               href="/campaigns"
@@ -115,28 +115,55 @@ export default function Header() {
             />
           </Tabs>
           <Box>
-            <Link href={"/login"}>
-              <Button variant="text" color="inherit" sx={{ ml: 2 }}>
-                Entrar
-              </Button>
-            </Link>
-            <Link href={"/sign-in"}>
-              <Button variant="contained" color="secondary" sx={{ ml: 1 }}>
-                Criar Conta
-              </Button>
-            </Link>
+            {!user ? (
+              <>
+                <Link href={"/login"}>
+                  <Button variant="text" color="inherit" sx={{ ml: 2 }}>
+                    Entrar
+                  </Button>
+                </Link>
+                <Link href={"/sign-in"}>
+                  <Button variant="contained" color="secondary" sx={{ ml: 1 }}>
+                    Criar Conta
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Link
+                href={"/profile"}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontWeight: "200",
+                  fontFamily: "20px",
+                  gap: "5px",
+                }}
+              >
+                <span>{user.displayName}</span>
+                <AccountCircle />
+              </Link>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
       <Box sx={{ height: 64 }} />
       <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
-        <List sx={{ width: 250 }}>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <Home sx={{ marginRight: 1 }} />
-              <ListItemText primary="Página inicial" />
-            </ListItemButton>
-          </ListItem>
+        <List
+          sx={{
+            width: 250,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Link href={"/ficha"}>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <Home sx={{ marginRight: 1 }} />
+                <ListItemText primary="Criar ficha" />
+              </ListItemButton>
+            </ListItem>
+          </Link>
           <ListItem disablePadding>
             <ListItemButton>
               <FavoriteIcon sx={{ marginRight: 1 }} />
@@ -149,6 +176,15 @@ export default function Header() {
               <ListItemText primary="Minhas Campanhas" />
             </ListItemButton>
           </ListItem>
+
+          {user && (
+            <ListItem disablePadding sx={{ mt: "auto" }}>
+              <ListItemButton onClick={logout}>
+                <ExitToApp sx={{ color: "var(--error)", marginRight: 1 }} />
+                <ListItemText sx={{ color: "var(--error)" }} primary="Sair" />
+              </ListItemButton>
+            </ListItem>
+          )}
         </List>
       </Drawer>
     </Box>
