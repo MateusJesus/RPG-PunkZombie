@@ -79,8 +79,8 @@ export default function Header() {
               <Image
                 src="/assets/letreiro_punkzombie.png"
                 alt="Letreiro PunkZombie"
-                width={150}
-                height={40}
+                width={1500}
+                height={400}
                 style={{ width: "auto", height: "50px", marginLeft: "15px" }}
                 priority
               />
@@ -93,10 +93,10 @@ export default function Header() {
             indicatorColor="secondary"
           >
             <Tab
+              sx={{ height: 64 }}
               component={Link}
               href="/"
               value={0}
-              sx={{ height: 70 }}
               label="Fichas"
             />
             {/* <Tab
@@ -110,7 +110,6 @@ export default function Header() {
               component={Link}
               href="/campaigns"
               value={2}
-              sx={{ height: 70 }}
               label="Campanhas"
             />
           </Tabs>
@@ -170,12 +169,14 @@ export default function Header() {
               <ListItemText primary="Minhas Favoritas" />
             </ListItemButton>
           </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <CampaignIcon sx={{ marginRight: 1 }} />
-              <ListItemText primary="Minhas Campanhas" />
-            </ListItemButton>
-          </ListItem>
+          <Link href={"/config-campaign"}>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <CampaignIcon sx={{ marginRight: 1 }} />
+                <ListItemText primary="Criar Campanha" />
+              </ListItemButton>
+            </ListItem>
+          </Link>
 
           {user && (
             <ListItem disablePadding sx={{ mt: "auto" }}>

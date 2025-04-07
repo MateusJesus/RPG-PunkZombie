@@ -1,10 +1,7 @@
 "use client";
 
-export default function Campaign() {
+import CampaignRPG from "../components/CampaignsRPG";
 
-  return (
-    <div>
-        Campaign
-    </div>
-  );
+export default function Campaign() {
+  return <h1>Lista de campanhas</h1>;
 }

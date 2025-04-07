@@ -1,0 +1,84 @@
+.campaign {
+  font-weight: 200;
+  margin-top: 10px;
+}
+
+.campaign label {
+  border-bottom: 0;
+  font-weight: 200;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.content {
+  width: 100%;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.content_item {
+  display: flex;
+  flex-direction: column;
+}
+
+.textarea {
+  height: 235px;
+}
+
+.imagem_perso {
+  width: 100%;
+  min-height: 23.5em;
+  height: 100%;
+  position: relative;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inset: 0;
+  box-sizing: border-box;
+}
+
+.imagem_perso img {
+  height: auto;
+  max-width: 100%;
+  display: flex;
+  padding: 0.5em;
+  align-items: center;
+  justify-content: center;
+}
+
+.imagem_perso input {
+  display: none;
+}
+
+.imagem_perso .icon {
+  font-size: 30px;
+}
+
+.imagem_perso .custom_file_upload {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 400;
+  position: absolute;
+  overflow: hidden;
+  inset: 0;
+  margin: 0;
+  max-width: 100%;
+  border: 2px dashed var(--color-3);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background ease-in-out 0.5s;
+}
+
+.custom_file_upload:hover {
+  border: 2px dashed var(--color-4);
+  background-color: rgba(129, 129, 129, 0.2);
+}

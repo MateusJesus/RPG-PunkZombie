@@ -56,18 +56,19 @@ const fields = [
   },
 ];
 
-export default function SettingsFicha({
+export default function SettingsComponent({
   openSettings,
   handleModal,
   setFormData,
+  formData,
 }) {
   const [settings, setSettings] = useState({
     comfirm: false,
-    belongs: "nao",
-    view: "privada",
-    campaigns_master: "editar",
-    campaigns_players: "nao",
-    belongs_input: "",
+    belongs: formData.config.belongs || "nao",
+    view: formData.config.view || "privada",
+    campaigns_master: formData.config.campaigns_master || "editar",
+    campaigns_players: formData.config.campaigns_players || "nao",
+    belongs_input: formData.config.belongs_input || "",
   });
 
   const handleChange = (e) => {
@@ -91,7 +92,7 @@ export default function SettingsFicha({
           settings.belongs === "sim" ? settings.belongs_input || "" : "",
       },
     }));
-    
+
     handleModal();
   };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import FichaRPG from "../components/ficha";
+import FichaRPG from "../components/FichaRPG";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect } from "react";
 import { Backdrop, CircularProgress } from "@mui/material";

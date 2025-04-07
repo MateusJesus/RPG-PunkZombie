@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import FichaRPG from "../../components/FichaRPG";
 import { useAuth } from "../../contexts/AuthContext";
 import LoadingPage from "@/app/components/Loading";
+import CampaignsRPG from "@/app/components/CampaignsRPG";
 
-export default function Ficha(props) {
+export default function Campaign(props) {
   const { user, loadingPage } = useAuth();
 
   if (loadingPage) return <LoadingPage />;
 
   const { slug } = use(props.params);
 
-  return <FichaRPG idFicha={slug} />;
+  return <CampaignsRPG idCampaigns={slug} />;
 }
