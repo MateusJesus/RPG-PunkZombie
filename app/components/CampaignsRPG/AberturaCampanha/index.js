@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import TituloSpray from "./TituloSpray";
+import TituloSprayBackground from "./TituloSprayBackground";
 
 export default function AberturaCampanha({ nome, historia, onFim }) {
   const [showTexto, setShowTexto] = useState(false);
@@ -67,36 +69,28 @@ export default function AberturaCampanha({ nome, historia, onFim }) {
             alignItems: "center",
             padding: "0 2rem",
             textAlign: "center",
-            fontFamily: "'Abibas', 'Playfair Display', serif",
+            overflow: "hidden",
           }}
         >
-          <motion.h1
-            initial={{ scale: 3, opacity: 0 }}
+          <div style={{ position: "relative", marginBottom: "2rem" }}>
+            <TituloSpray>{nome}</TituloSpray>
+            <TituloSprayBackground />
+          </div>
+
+          <motion.p
+            initial={{ scale: 2, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 2 }}
-            style={{ fontSize: "3rem", marginBottom: "2rem" }}
+            transition={{ delay: 3, duration: 2 }}
+            style={{
+              fontSize: "1.25rem",
+              maxWidth: "800px",
+              lineHeight: 1.6,
+              
+            }}
           >
-            {nome}
-          </motion.h1>
+            {historia}
+          </motion.p>
 
-          {/* Texto digitado da história */}
-          {showTexto && (
-            <motion.p
-              initial={{ scale: 3, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 2 }}
-              style={{
-                fontSize: "1.25rem",
-                maxWidth: "800px",
-                fontFamily: "monospace",
-                lineHeight: 1.6,
-              }}
-            >
-              {historia}
-            </motion.p>
-          )}
-
-          {/* Botão de Skip */}
           {showSkip && (
             <motion.div
               initial={{ opacity: 0 }}

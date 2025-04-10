@@ -2,7 +2,7 @@
 
 import ItemFicha from "./ItemFicha";
 
-export default function ListFicha({ datas, lastRef }) {
+export default function ListFicha({ datas }) {
   return (
     <section>
       <ul
@@ -19,9 +19,8 @@ export default function ListFicha({ datas, lastRef }) {
       >
         {datas.length > 0 ? (
           datas.map((data, index) => {
-            const isLast = index === datas.length - 1;
             return (
-              <li key={data.id} ref={isLast ? lastRef : null}>
+              <li key={data.id + index}>
                 <ItemFicha data={data} />
               </li>
             );

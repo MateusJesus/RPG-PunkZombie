@@ -12,5 +12,9 @@ export default function ConfigCampaign(props) {
 
   const { slug } = use(props.params);
 
-  return <ConfigCampaignComponent idCampanha ={slug} />;
+  return (
+    <section>
+      <ConfigCampaignComponent idCampanha={slug} />;
+    </section>
+  );
 }

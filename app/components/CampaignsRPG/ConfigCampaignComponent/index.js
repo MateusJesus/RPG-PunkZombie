@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { Snackbar, Dialog, DialogContent, Typography } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
-import InfoCampaign from "../InfoCampaign";
+import InfoCampaign from "./InfoCampaign";
 import LoadingPage from "../../Loading";
 
 export default function ConfigCampaignComponent({ idCampanha }) {
@@ -14,14 +14,20 @@ export default function ConfigCampaignComponent({ idCampanha }) {
     useAuth();
 
   const [formData, setFormData] = useState({
-    nome: "",
-    status: "ativa",
-    descricao: "...",
-    imagem: "...",
-    historia: "...",
-    visibilidade: "publico",
-    permissaoFichas: "auto",
+    configGeral: {
+      nome: "",
+      status: "ativa",
+      max_fichas: "",
+      max_players: "",
+      visibilidade: "publico",
+      permissaoFichas: "auto",
+      permissaoConteudo: "jogadoresContent",
+    },
+    contents: [],
     jogadores: [],
+    descricao: "",
+    imagem: "",
+    historia: "",
   });
 
   const [loadingSave, setLoadingSave] = useState(false);

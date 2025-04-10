@@ -61,8 +61,8 @@ export default function ProfileDetails() {
       </Box>
 
       <Button
-        variant="outlined"
-        color="secundary"
+        variant="contained"
+        color="secondary"
         sx={{ mt: 3 }}
         onClick={() => alert("Função de editar ainda não implementada.")}
       >

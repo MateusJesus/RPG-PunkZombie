@@ -11,10 +11,9 @@ import {
 } from "@mui/material";
 import { useAuth } from "@/app/contexts/AuthContext";
 
-export default function EnterCampaign() {
+export default function EnterCampaign({ formData, idCampaigns, setJustView }) {
   const { user, adicionarJogador } = useAuth();
-
-  const [codigo, setCodigo] = useState("");
+  //const [codigo, setCodigo] = useState(formData.uid);
   const [senha, setSenha] = useState("");
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -23,7 +22,7 @@ export default function EnterCampaign() {
   });
 
   const handleEntrar = async () => {
-    if (!codigo) {
+    if (!idCampaigns) {
       setSnackbar({
         open: true,
         message: "Insira o código da campanha.",
@@ -34,22 +33,25 @@ export default function EnterCampaign() {
 
     try {
       const resultado = await adicionarJogador(
-        codigo.trim(),
+        idCampaigns.trim(),
         senha.trim(),
         user
       );
+
       if (resultado.tipo === "entrada-direta") {
         setSnackbar({
           open: true,
           message: "Você entrou na campanha com sucesso!",
           severity: "success",
         });
+        window.location.reload();
       } else if (resultado.tipo === "pedido-enviado") {
         setSnackbar({
           open: true,
           message: "Pedido de entrada enviado ao mestre.",
           severity: "info",
         });
+        window.location.reload();
       }
     } catch (err) {
       setSnackbar({ open: true, message: err.message, severity: "error" });
@@ -78,23 +80,26 @@ export default function EnterCampaign() {
         </Typography>
 
         <Box display="flex" flexDirection="column" gap={3} mt={3}>
-          <TextField
+          {/* <TextField
             label="Código da Campanha"
             variant="outlined"
             value={codigo}
             onChange={(e) => setCodigo(e.target.value)}
             fullWidth
             sx={{ borderRadius: 2 }}
-          />
-          <TextField
-            label="Senha (se necessário)"
-            variant="outlined"
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            fullWidth
-            sx={{ borderRadius: 2 }}
-          />
+          /> */}
+          {!(formData.senha_acesso === "") && (
+            <TextField
+              label="Senha"
+              color="secondary"
+              variant="outlined"
+              type="password"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              fullWidth
+              sx={{ borderRadius: 2 }}
+            />
+          )}
           <Button
             variant="contained"
             color="primary"
@@ -111,7 +116,22 @@ export default function EnterCampaign() {
               },
             }}
           >
-            Entrar na campanha
+            Participar da campanha
+          </Button>
+          <hr className="separation" />
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setJustView(true)}
+            sx={{
+              py: 1.5,
+              fontWeight: "bold",
+              fontSize: "1rem",
+              borderRadius: 3,
+              textTransform: "none",
+            }}
+          >
+            Ver campanha
           </Button>
         </Box>
       </Box>

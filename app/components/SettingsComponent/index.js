@@ -9,19 +9,14 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 const fields = [
-  {
-    id: "belongs",
-    type: "",
-    label: "Sua ficha pertence a uma campanha?",
-    radio: [
-      { id: "belongs_yes", label: "Sim", value: "sim" },
-      { id: "belongs_no", label: "Não", value: "nao" },
-    ],
-  },
   {
     id: "view",
     type: "",
@@ -70,6 +65,56 @@ export default function SettingsComponent({
     campaigns_players: formData.config.campaigns_players || "nao",
     belongs_input: formData.config.belongs_input || "",
   });
+
+  const { abrirCampanha, desvincularFichaDaCampanha } = useAuth();
+
+  const [campanha, setCampanha] = useState(null);
+
+  console.log(formData);
+
+  useEffect(() => {
+    const fetchCampanha = async () => {
+      try {
+        if (formData.config.belongs !== "sim" || !formData.config.belongs_input)
+          return;
+
+        const dados = await abrirCampanha(formData.config.belongs_input);
+        setCampanha(dados);
+      } catch (error) {
+        console.error("Erro ao carregar campanha:", error);
+      }
+    };
+
+    fetchCampanha();
+  }, [formData.config.belongs, formData.config.belongs_input]);
+
+  const handleUnlink = async () => {
+    try {
+      await desvincularFichaDaCampanha(
+        formData.id,
+        formData.config.belongs_input
+      );
+
+      setSettings((prev) => ({
+        ...prev,
+        belongs: "nao",
+        belongs_input: "",
+      }));
+
+      setFormData((prevData) => ({
+        ...prevData,
+        config: {
+          ...prevData.config,
+          belongs: "nao",
+          belongs_input: "",
+        },
+      }));
+
+      setCampanha(null);
+    } catch (error) {
+      console.error("Erro ao desvincular:", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -136,17 +181,6 @@ export default function SettingsComponent({
                           control={<Radio />}
                           label={radioItem.label}
                         />
-                        {settings.belongs === "sim" &&
-                          radioItem.value === "sim" &&
-                          item.id === "belongs" && (
-                            <TextField
-                              placeholder="Digite o id da campanha"
-                              name="belongs_input"
-                              variant="standard"
-                              value={settings.belongs_input}
-                              onChange={handleChange}
-                            />
-                          )}
                       </div>
                     ))}
                   </RadioGroup>
@@ -154,6 +188,34 @@ export default function SettingsComponent({
               );
             }
           })}
+
+          <hr className="separation" />
+
+          {/* Campanha vinculada */}
+          {settings.belongs === "sim" && (
+            <Box sx={{ mt: 1, mb: 2 }}>
+              <Typography variant="body1">
+                Esta ficha está vinculada à campanha:
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: "bold", color: "var(--color-accent)" }}
+                >
+                  {campanha?.configGeral?.nome || "Carregando..."}
+                </Typography>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="error"
+                  onClick={handleUnlink}
+                >
+                  Desvincular
+                </Button>
+              </Box>
+            </Box>
+          )}
+
           <Button variant="contained" onClick={handleConfirm}>
             Confirmar configurações
           </Button>

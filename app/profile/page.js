@@ -85,9 +85,9 @@ export default function Profile() {
           Filtrar por:
         </Typography>
         <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
-          <Button color="secundary" variant="outlined">Minhas Fichas</Button>
-          <Button color="secundary" variant="outlined">Minhas Campanhas</Button>
-          <Button color="secundary" variant="outlined">Campanhas Criadas</Button>
+          <Button color="secondary" variant="outlined">Minhas Fichas</Button>
+          <Button color="secondary" variant="outlined">Minhas Campanhas</Button>
+          <Button color="secondary" variant="outlined">Campanhas Criadas</Button>
         </Box>
 
         {fichas.length > 0 ? (

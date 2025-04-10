@@ -14,5 +14,9 @@ export default function Campaign(props) {
 
   const { slug } = use(props.params);
 
-  return <CampaignsRPG idCampaigns={slug} />;
+  return (
+    <section>
+      <CampaignsRPG idCampaigns={slug} />
+    </section>
+  );
 }

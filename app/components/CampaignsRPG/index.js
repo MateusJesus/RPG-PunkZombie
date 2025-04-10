@@ -5,10 +5,12 @@ import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import EnterCampaign from "./EnterCampaign";
 import CampanhaDetalhes from "./CampanhaDetalhes";
-import JogadoresLista from "./JogadoresLista";
+import JogadoresLista from "./CampaignPlayer/JogadoresLista";
 import LoadingPage from "../Loading";
 import AberturaCampanha from "./AberturaCampanha";
 import { Box, Modal, Typography, CircularProgress } from "@mui/material";
+import { Password } from "@mui/icons-material";
+import CampaignPlayer from "./CampaignPlayer";
 
 export default function CampaignsRPG({ idCampaigns }) {
   const { user, abrirCampanha, loadingPage } = useAuth();
@@ -17,10 +19,10 @@ export default function CampaignsRPG({ idCampaigns }) {
   const [formData, setFormData] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
   const [isPlayer, setIsPlayer] = useState(false);
+  const [justView, setJustView] = useState(false);
   const [showAbertura, setShowAbertura] = useState(false);
   const [aberturaFinalizada, setAberturaFinalizada] = useState(false);
 
-  // Busca a campanha e verifica o papel do usuário
   useEffect(() => {
     if (!idCampaigns || !user) return;
 
@@ -28,13 +30,11 @@ export default function CampaignsRPG({ idCampaigns }) {
       try {
         const dados = await abrirCampanha(idCampaigns);
         setFormData(dados);
-
         const ehOwner = user.uid === dados.mestreId;
         const ehPlayer = dados.jogadores?.some((j) => j.uid === user.uid);
         setIsOwner(ehOwner);
         setIsPlayer(ehPlayer);
         setShowAbertura(true);
-        //setAberturaFinalizada(true);
       } catch (error) {
         console.error("Erro ao carregar campanha:", error);
       }
@@ -48,12 +48,11 @@ export default function CampaignsRPG({ idCampaigns }) {
   const aguardandoPermissao = formData.pedidosEntrada?.some(
     (pedido) => pedido.uid === user.uid
   );
-
+  
   const jogando = formData.jogadores?.some(
     (jogador) => jogador.uid === user.uid
   );
 
-  // Estilo padrão para os modais
   const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -67,30 +66,35 @@ export default function CampaignsRPG({ idCampaigns }) {
     textAlign: "center",
   };
 
-  if (showAbertura && !aberturaFinalizada && jogando) {
+  if ((isOwner || isPlayer) && showAbertura && !aberturaFinalizada && jogando) {
     return (
       <AberturaCampanha
-        nome={formData.nome}
+        nome={formData.configGeral.nome}
         historia={formData.historia}
         onFim={() => setAberturaFinalizada(true)}
       />
     );
   }
-  
 
-  return (
-    <Box p={3}>
-      {/* Detalhes da campanha */}
-      <CampanhaDetalhes
-        formData={formData}
-        isOwner={isOwner}
-        idCampaigns={idCampaigns}
-      />
-
-      {/* Modal: aguardando permissão */}
-      <Modal open={aguardandoPermissao}>
+  if (!aguardandoPermissao && !isOwner && !isPlayer && !justView) {
+    return (
+      <Modal open>
         <Box sx={modalStyle}>
-          <CircularProgress />
+          <EnterCampaign
+            setJustView={setJustView}
+            formData={formData}
+            idCampaigns={idCampaigns}
+          />
+        </Box>
+      </Modal>
+    );
+  }
+
+  if (aguardandoPermissao && !isOwner && !isPlayer) {
+    return (
+      <Modal open>
+        <Box sx={modalStyle}>
+          <CircularProgress color="secondary" />
           <Typography variant="h6" mt={2}>
             Aguardando permissão do mestre...
           </Typography>
@@ -100,32 +104,25 @@ export default function CampaignsRPG({ idCampaigns }) {
           </Typography>
         </Box>
       </Modal>
+    );
+  }
 
-      {/* Modal: entrar na campanha */}
-      {!aguardandoPermissao && !isOwner && !isPlayer && (
-        <Modal open>
-          <Box sx={modalStyle}>
-            <EnterCampaign />
-          </Box>
-        </Modal>
-      )}
+  return (
+    <Box>
+      {(isOwner || jogando || justView) && (
+        <>
+          <CampanhaDetalhes
+            formData={formData}
+            isOwner={isOwner}
+            idCampaigns={idCampaigns}
+          />
 
-      {/* Lista de jogadores */}
-      {(isOwner || isPlayer) && (
-        <JogadoresLista
-          idCampaigns={idCampaigns}
-          jogadores={formData.jogadores}
-          isOwner={isOwner}
-        />
-      )}
-
-      {/* Lista de pedidos de entrada (somente para o mestre) */}
-      {isOwner && formData.pedidosEntrada?.length > 0 && (
-        <JogadoresLista
-          idCampaigns={idCampaigns}
-          pedidosEntrada={formData.pedidosEntrada}
-          isOwner={isOwner}
-        />
+          <CampaignPlayer
+            formData={formData}
+            idCampaigns={idCampaigns}
+            isOwner={isOwner}
+          />
+        </>
       )}
     </Box>
   );
