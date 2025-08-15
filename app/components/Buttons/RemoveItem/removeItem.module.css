@@ -1,7 +1,6 @@
 .remove_item {
   text-align: center;
   color: var(--title-color);
-  background-color: var(--color-3);
   border-radius: 100%;
   margin: 0;
   height: 1em;
@@ -14,5 +13,4 @@
 }
 
 .remove_item:hover {
-  background-color: var(--color-4);
 }

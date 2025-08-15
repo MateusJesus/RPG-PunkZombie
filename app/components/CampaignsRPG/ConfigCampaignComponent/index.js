@@ -55,12 +55,15 @@ export default function ConfigCampaignComponent({ idCampanha }) {
           message: "Campanha atualizada com sucesso!",
           severity: "success",
         });
+        setShowSuccessDialog(true);
+        setTimeout(() => {
+          router.push("/campaigns/" + idCampanha);
+        }, 2500);
       } else {
         const novaId = await criarCampanha(formData);
         setShowSuccessDialog(true);
         setTimeout(() => {
-          setShowSuccessDialog(false);
-          router.push("/config-campaign/" + novaId);
+          router.push("/campaigns/" + novaId);
         }, 2500);
       }
     } catch (error) {
@@ -96,6 +99,7 @@ export default function ConfigCampaignComponent({ idCampanha }) {
     <section>
       {!showSuccessDialog && (
         <InfoCampaign
+          idCampanha={idCampanha}
           handleSubmit={handleSubmit}
           formData={formData}
           setFormData={setFormData}
@@ -114,7 +118,9 @@ export default function ConfigCampaignComponent({ idCampanha }) {
         <DialogContent style={{ textAlign: "center", padding: "2rem" }}>
           <CheckCircle style={{ fontSize: 60, color: "#4caf50" }} />
           <Typography variant="h6" style={{ marginTop: "1rem" }}>
-            Campanha criada com sucesso!
+            {idCampanha
+              ? "Campanha atualizada com sucesso!"
+              : "Campanha criada com sucesso!"}
           </Typography>
           <Typography variant="body2" color="textSecondary">
             Redirecionando...

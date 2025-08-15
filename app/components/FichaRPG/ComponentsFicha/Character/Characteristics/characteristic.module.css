@@ -1,0 +1,22 @@
+.carac_personagem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+}
+
+.caracteristica {
+  font-weight: 400;
+  position: relative;
+  height: 100%;
+}
+
+@media (max-width: 1050px) {
+  .caracteristica {
+    font-weight: 400;
+    position: relative;
+    height: 150px;
+    display: block;
+  }
+
+}

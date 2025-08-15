@@ -42,8 +42,9 @@ export default function JogadoresLista({
 
   const jogadoresList = jogadores ?? pedidosEntrada ?? [];
 
-  const mestre = jogadoresList.find(j => j.uid === formData.mestreId);
-  const outrosJogadores = jogadoresList.filter(j => j.uid !== formData.mestreId);
+  const mestre = jogadoresList.find(j => j.uid === formData?.mestreId);
+
+  const outrosJogadores = jogadoresList.filter(j => j.uid !== formData?.mestreId);
 
   return (
     <>

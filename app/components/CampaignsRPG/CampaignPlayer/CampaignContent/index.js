@@ -19,7 +19,19 @@ export default function CampaignContent({ idCampaigns, formData }) {
   const [conteudoEditando, setConteudoEditando] = useState(null);
   const [filtro, setFiltro] = useState("todos");
   const [loading, setLoading] = useState(false);
-  const [successOpen, setSuccessOpen] = useState(false);
+  const [statusContent, setStatusContent] = useState({
+    status: false,
+    alert: "",
+    message: "",
+  });
+  const [content, setContent] = useState({
+    nome: "",
+    tipo: "",
+    descricao: "",
+    outroTipo: "",
+    imagem: null,
+  });
+
   const {
     adicionarConteudoCampanha,
     getConteudosCampanha,
@@ -48,6 +60,22 @@ export default function CampaignContent({ idCampaigns, formData }) {
   };
 
   const handleAddContent = async (data) => {
+    const { nome, tipo, descricao, outroTipo } = data;
+
+    if (
+      nome === "" ||
+      tipo === "" ||
+      descricao === "" ||
+      (tipo === "outros" && outroTipo === "")
+    ) {
+      setConteudoEditando(null);
+      return setStatusContent({
+        status: true,
+        alert: "error",
+        message: "Preencha todos os campos!",
+      });
+    }
+
     try {
       setLoading(true);
       if (conteudoEditando) {
@@ -55,7 +83,11 @@ export default function CampaignContent({ idCampaigns, formData }) {
       } else {
         await adicionarConteudoCampanha(idCampaigns, data);
       }
-      setSuccessOpen(true);
+      setStatusContent({
+        status: true,
+        alert: "success",
+        message: "Conteúdo adicionado com sucesso!",
+      });
       setOpenModal(false);
       setConteudoEditando(null);
       setTimeout(() => {
@@ -64,6 +96,7 @@ export default function CampaignContent({ idCampaigns, formData }) {
     } catch (err) {
       console.error("Erro ao salvar conteúdo:", err.message);
     } finally {
+      setOpenModal(false);
       setLoading(false);
     }
   };
@@ -89,23 +122,49 @@ export default function CampaignContent({ idCampaigns, formData }) {
     fetchConteudos();
   }, [idCampaigns]);
 
+  useEffect(() => {
+    if (conteudoEditando) {
+      setContent(conteudoEditando);
+    } else {
+      setContent({
+        nome: "",
+        tipo: "",
+        descricao: "",
+        outroTipo: "",
+        imagem: null,
+      });
+    }
+  }, [conteudoEditando]);
+
+  const handleClose = () => {
+    setConteudoEditando(null);
+    setContent({
+      nome: "",
+      tipo: "",
+      descricao: "",
+      outroTipo: "",
+      imagem: null,
+    });
+    setOpenModal(false);
+  };
+
   return (
     <>
       <AddContentModal
+        content={content}
+        setContent={setContent}
         open={openModal}
-        handleClose={() => {
-          setOpenModal(false);
-          setConteudoEditando(null);
-        }}
+        handleClose={handleClose}
         onSave={handleAddContent}
         conteudoEditando={conteudoEditando}
       />
+
       <Snackbar
-        open={successOpen}
+        open={statusContent.status}
         autoHideDuration={3000}
-        onClose={() => setSuccessOpen(false)}
+        onClose={() => setStatusContent({ status: false })}
       >
-        <Alert severity="success">Conteúdo adicionado com sucesso!</Alert>
+        <Alert severity={statusContent.alert}>{statusContent.message}</Alert>
       </Snackbar>
 
       <Box
@@ -172,7 +231,8 @@ export default function CampaignContent({ idCampaigns, formData }) {
             </Box>
           </Box>
           {(formData.mestreId === user.uid ||
-            formData.configGeral.permissaoConteudo === "jogadoresContent") && (
+            (formData.configGeral.permissaoConteudo === "jogadoresContent" &&
+              formData.jogadores.some((j) => j.uid === user.uid))) && (
             <Button
               variant="outlined"
               color="secondary"
@@ -185,14 +245,18 @@ export default function CampaignContent({ idCampaigns, formData }) {
         <hr className="separation" />
 
         {loading ? (
-          <CircularProgress sx={{ mt: 4 }} />
-        ) : (
+          <CircularProgress color="secondary" sx={{ mt: 4 }} />
+        ) : conteudos.length !== 0 ? (
           <CardContent
             conteudos={conteudos}
             filter={filtro}
             onEdit={handleEditContent}
             onDelete={handleDeleteContent}
           />
+        ) : (
+          <Typography variant="body1" color="text.secondary">
+            Nenhum conteúdo adicionado no momento...
+          </Typography>
         )}
       </Box>
     </>

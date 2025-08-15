@@ -11,16 +11,15 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
 
-export default function AddContentModal({ open, handleClose, onSave }) {
-  const [content, setContent] = useState({
-    nome: "",
-    tipo: "",
-    outroTipo: "",
-    imagem: null,
-  });
-
+export default function AddContentModal({
+  open,
+  handleClose,
+  onSave,
+  content,
+  setContent,
+  conteudoEditando,
+}) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setContent((prev) => ({
@@ -43,7 +42,9 @@ export default function AddContentModal({ open, handleClose, onSave }) {
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
-      <h1 className="title_content">Adicionar conteúdo</h1>
+      <h1 className="title_content">
+        {conteudoEditando ? "Editar" : "Adicioar"} conteúdo
+      </h1>
       <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
           required
@@ -53,7 +54,57 @@ export default function AddContentModal({ open, handleClose, onSave }) {
           onChange={handleChange}
           inputProps={{ maxLength: 60 }}
         />
-        
+
+        <Box>
+          <Typography variant="body2" mb={0.5}>
+            Imagem (opcional)
+          </Typography>
+
+          <label
+            htmlFor="upload-image"
+            style={{
+              display: "inline-block",
+              padding: "0.5em 1em",
+              backgroundColor: "var(--color-1)",
+              color: "#fff",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              transition: "background 0.3s",
+            }}
+
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor = "var(--color-3)")
+            }
+
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor = "var(--color-1)")
+            }
+          >
+            Selecionar imagem
+          </label>
+
+          <input
+            id="upload-image"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ display: "none" }}
+          />
+
+          {content.imagem && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              mt={1}
+              display="block"
+            >
+              Arquivo selecionado: {content.imagem.name}
+            </Typography>
+          )}
+        </Box>
+
         <TextField
           required
           multiline
@@ -89,18 +140,6 @@ export default function AddContentModal({ open, handleClose, onSave }) {
             inputProps={{ maxLength: 30 }}
           />
         )}
-
-        <Box>
-          <Typography variant="body2" mb={0.5}>
-            Imagem (opcional)
-          </Typography>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          {content.imagem && (
-            <Typography variant="caption" color="text.secondary">
-              Arquivo selecionado: {content.imagem.name}
-            </Typography>
-          )}
-        </Box>
       </DialogContent>
 
       <DialogActions>
@@ -108,7 +147,7 @@ export default function AddContentModal({ open, handleClose, onSave }) {
           Cancelar
         </Button>
         <Button variant="outlined" color="secondary" onClick={handleSubmit}>
-          Adicionar
+          {conteudoEditando ? "Editar" : "Adicionar"}
         </Button>
       </DialogActions>
     </Dialog>

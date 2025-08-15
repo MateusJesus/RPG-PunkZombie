@@ -48,7 +48,7 @@ export default function CampaignsRPG({ idCampaigns }) {
   const aguardandoPermissao = formData.pedidosEntrada?.some(
     (pedido) => pedido.uid === user.uid
   );
-  
+
   const jogando = formData.jogadores?.some(
     (jogador) => jogador.uid === user.uid
   );
@@ -67,13 +67,18 @@ export default function CampaignsRPG({ idCampaigns }) {
   };
 
   if ((isOwner || isPlayer) && showAbertura && !aberturaFinalizada && jogando) {
-    return (
-      <AberturaCampanha
-        nome={formData.configGeral.nome}
-        historia={formData.historia}
-        onFim={() => setAberturaFinalizada(true)}
-      />
-    );
+    const jogador = formData.jogadores.find((j) => j.uid === user.uid);
+    const podeVerAbertura = jogador && jogador.viewOpening === true;
+
+    if (podeVerAbertura) {
+      return (
+        <AberturaCampanha
+          nome={formData.configGeral.nome}
+          historia={formData.historia}
+          onFim={() => setAberturaFinalizada(true)}
+        />
+      );
+    }
   }
 
   if (!aguardandoPermissao && !isOwner && !isPlayer && !justView) {

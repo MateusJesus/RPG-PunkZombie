@@ -13,7 +13,7 @@ export default function ListFicha({ datas }) {
           alignItems: "center",
           justifyContent: "center",
           width: "100%",
-          gap: "20px",
+          gap: "40px",
           listStyle: "none",
         }}
       >
@@ -26,7 +26,7 @@ export default function ListFicha({ datas }) {
             );
           })
         ) : (
-          <p>Não tem fichas ainda, vamos criar uma?</p>
+          <p>Não tem fichas aqui ainda...</p>
         )}
       </ul>
     </section>

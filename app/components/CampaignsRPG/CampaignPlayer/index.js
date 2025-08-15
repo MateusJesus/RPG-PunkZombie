@@ -54,6 +54,7 @@ export default function CampaignPlayer({ idCampaigns, isOwner, formData }) {
   tabs.push({ label: "História" });
   tabs.push({ label: "Conteúdo" });
 
+
   return (
     <>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -128,7 +129,7 @@ export default function CampaignPlayer({ idCampaigns, isOwner, formData }) {
         if (tab.label === "História") {
           return (
             <CustomTabPanel key={index} value={value} index={index}>
-              <CampaignHistory formData={formData} />
+              <CampaignHistory idCampaign={idCampaigns} formData={formData} />
             </CustomTabPanel>
           );
         }

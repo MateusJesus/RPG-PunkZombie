@@ -8,7 +8,7 @@ import LoadingPage from "@/app/components/Loading";
 import CampaignsRPG from "@/app/components/CampaignsRPG";
 
 export default function Campaign(props) {
-  const { user, loadingPage } = useAuth();
+  const { loadingPage } = useAuth();
 
   if (loadingPage) return <LoadingPage />;
 

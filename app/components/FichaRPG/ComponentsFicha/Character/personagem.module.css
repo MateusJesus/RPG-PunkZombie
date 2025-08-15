@@ -1,0 +1,78 @@
+.personagem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  width: 100%;
+  padding-top: 2em;
+}
+
+.sobre_personagem {
+  display: grid;
+  grid-template-columns: 1fr 354.375px 1fr;
+  gap: 10px;
+}
+
+.informacoes_status {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.div_inf_stat {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.carac_personagem {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  height: 100%;
+}
+
+.resistencia_foto,
+.atri_peri {
+  display: grid;
+  gap: 10px;
+  grid-template-rows: 81.07px 630px;
+  height: 100%;
+}
+
+.resistencia_foto input {
+  height: 2.5em;
+  text-align: center;
+  font-weight: 700;
+}
+
+@media (max-width: 1050px) {
+  .personagem label {
+    font-size: 9px;
+  }
+
+  .sobre_personagem {
+    grid-template-columns: 1fr;
+  }
+
+  .resistencia_foto {
+    width: auto;
+  }
+
+  .personagem input:focus {
+    outline: none;
+  }
+
+  .personagem input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  .div_inf_stat {
+    width: 100%;
+  }
+
+  .resistencia input {
+    width: 100%;
+    align-items: center;
+  }
+}

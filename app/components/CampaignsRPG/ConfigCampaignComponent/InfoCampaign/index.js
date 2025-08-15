@@ -11,8 +11,16 @@ import {
 } from "@mui/material";
 import { FaFileImage } from "react-icons/fa";
 import Link from "next/link";
+import { useAuth } from "@/app/contexts/AuthContext";
 
-export default function InfoCampaign({ handleSubmit, formData, setFormData }) {
+export default function InfoCampaign({
+  idCampanha,
+  handleSubmit,
+  formData,
+  setFormData,
+}) {
+  const { excluirCampanha } = useAuth();
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -299,14 +307,27 @@ export default function InfoCampaign({ handleSubmit, formData, setFormData }) {
           </div>
         </div>
 
-        {/* BOTÕES */}
         <div className="box" style={{ textAlign: "right" }}>
-          <button className="botaoAdicionar" type="button">
-            Cancelar
-          </button>
           <button className="botaoAdicionar" type="submit">
-            Criar Campanha
+            {idCampanha ? "Atualizar Campanha" : "Criar Campanha"}
           </button>
+          {idCampanha && (
+            <button
+              className="botaoExcluir"
+              type="button"
+              onClick={() => {
+                const confirmar = confirm(
+                  "Tem certeza que deseja excluir esta campanha?"
+                );
+                if (confirmar) {
+                  excluirCampanha(idCampanha);
+                }
+              }}
+              style={{ marginRight: "1rem", backgroundColor: "#c0392b" }}
+            >
+              Excluir Campanha
+            </button>
+          )}
         </div>
       </div>
     </form>

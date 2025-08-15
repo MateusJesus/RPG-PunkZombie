@@ -11,9 +11,11 @@ export default function CardContent({ conteudos, filter, onEdit, onDelete }) {
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr 1fr",
+        gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))",
         gap: 2,
         mt: 3,
+        alignItems: "start",
+        width: "100%",
       }}
     >
       {conteudos
@@ -26,63 +28,72 @@ export default function CardContent({ conteudos, filter, onEdit, onDelete }) {
               key={index}
               sx={{
                 width: "100%",
-                height: "100%",
+                height: "auto", 
                 p: 2,
                 textAlign: "left",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
                 flexDirection: "column",
-                bottom: 0,
+                justifyContent: "space-between",
               }}
             >
+              {" "}
+              <Typography
+                sx={{
+                  wordBreak: "break-word",
+                  hyphens: "auto",
+                  width: "100%",
+                }}
+                variant="subtitle1"
+                fontWeight="700"
+                mt={1}
+              >
+                {c.nome.toUpperCase()}
+              </Typography>
               <Box>
-                {" "}
-                <Typography
-                  sx={{
-                    wordBreak: "break-word",
-                    hyphens: "auto",
-                  }}
-                  variant="subtitle1"
-                  fontWeight="bold"
-                  mt={1}
-                >
-                  {c.nome.toUpperCase()}
-                </Typography>
-                <Box
-                  sx={{
-                    height: 150,
-                    background: "var(--color-1)",
-                  }}
-                >
-                  {c.imagem && (
+                {c.imagem && (
+                  <Box
+                    sx={{
+                      height: 150,
+                      background: "var(--color-1)",
+                    }}
+                  >
                     <img
                       src={c.imagem}
                       alt={c.tipo}
                       style={{
-                        width: "100%",
+                        width: "200px",
                         height: 120,
                         objectFit: "cover",
-                        borderRadius: 8,
                       }}
                     />
-                  )}
-                </Box>
-                <Typography variant="subtitle1" fontWeight="bold" mt={1}>
-                  {c.tipo.toUpperCase()}
-                </Typography>
-                <Typography
-                  sx={{
-                    wordBreak: "break-word",
-                    hyphens: "auto",
-                  }}
-                  variant="body2"
-                  color="text.secondary"
-                >
-                  {c.descricao}
-                </Typography>
+                  </Box>
+                )}
               </Box>
-
+              <Typography
+                sx={{
+                  wordBreak: "break-word",
+                  hyphens: "auto",
+                  marginTop: "5px",
+                  width: "100%",
+                }}
+                fontWeight="100"
+                variant="subtitle1"
+                mt={1}
+              >
+                {c.tipo.toUpperCase()}
+              </Typography>
+              <Typography
+                sx={{
+                  wordBreak: "break-word",
+                  hyphens: "auto",
+                  width: "100%",
+                  marginTop: "5px",
+                }}
+                variant="body2"
+                color="text.secondary"
+              >
+                {c.descricao}
+              </Typography>
               <Box
                 sx={{
                   display: "flex",

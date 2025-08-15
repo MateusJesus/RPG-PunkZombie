@@ -23,14 +23,19 @@ import {
   startAfter,
   arrayUnion,
   arrayRemove,
+  deleteDoc,
+  setDoc,
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [loadingPage, setLoadingPage] = useState(true);
+  const [imageFicha, setImageFicha] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -70,10 +75,32 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const uploadImagemFicha = async (imagemFile) => {
+    const formData = new FormData();
+    formData.append("file", imagemFile);
+
+    const res = await fetch("/api/uploadImgFicha", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      throw new Error(`Falha no upload da imagem: ${res.status}`);
+    }
+
+    return await res.json(); // Retorna { url, public_id }
+  };
+
   const salvarFicha = async (ficha) => {
     try {
       if (!user) {
         throw new Error("Usuário não autenticado.");
+      }
+
+      if (!imageFicha) {
+        console.log({ message: "imagem não encontrada.", data: imageFicha });
+      } else {
+        uploadImageFicha;
       }
 
       const fichaComUsuario = {
@@ -93,19 +120,102 @@ export function AuthProvider({ children }) {
 
   const editarFicha = async (idFicha, dadosAtualizados) => {
     try {
-      if (!user) {
-        throw new Error("Usuário não autenticado.");
-      }
+      if (!user) throw new Error("Usuário não autenticado.");
 
-      const fichaComUsuario = {
+      let fichaComUsuario = {
         ...dadosAtualizados,
         uid: user.uid,
         usuario: user.displayName,
       };
 
+      // Se tem nova imagem
+      if (imageFicha) {
+        // Deleta imagem antiga se existir
+        if (dadosAtualizados.imagemId) {
+          try {
+            const resDelete = await fetch(
+              `/api/uploadImgFicha?public_id=${fichaComUsuario.imagemId}`,
+              { method: "DELETE" }
+            );
+            const deleteData = await resDelete.json();
+            console.log("Imagem antiga deletada:", deleteData);
+          } catch (err) {
+            console.error("Erro ao deletar imagem antiga:", err);
+          }
+        }
+
+        // Faz upload da nova imagem usando a função separada
+        const uploadResult = await uploadImagemFicha(imageFicha);
+        console.log("Nova imagem enviada com sucesso:", uploadResult);
+
+        fichaComUsuario.imagem = uploadResult.url;
+        fichaComUsuario.imagemId = uploadResult.public_id;
+
+        // Limpa estado local
+        setImageFicha(null);
+      } else {
+        console.log("Nenhuma nova imagem enviada, mantendo a existente.");
+      }
+
+      // Atualiza ficha no Firestore
       const fichaRef = doc(db, "fichas", idFicha);
       await updateDoc(fichaRef, fichaComUsuario);
 
+      console.log("Ficha atualizada com sucesso!");
+      return true;
+    } catch (error) {
+      console.error("Erro ao atualizar a ficha:", error.message);
+      return false;
+    }
+  };
+
+  const editarFichaMestre = async (idFicha, dadosAtualizados) => {
+    try {
+      if (!user) throw new Error("Usuário não autenticado.");
+
+      if (
+        !dadosAtualizados?.config?.campaigns_master ||
+        !dadosAtualizados?.config?.belongs ||
+        !dadosAtualizados?.config?.belongs_input
+      ) {
+        throw new Error("Campos obrigatórios da campanha ausentes no update.");
+      }
+
+      // Busca a ficha original para preservar o uid do dono
+      const fichaRef = doc(db, "fichas", idFicha);
+      const fichaSnap = await getDoc(fichaRef);
+
+      if (!fichaSnap.exists()) {
+        throw new Error("Ficha não encontrada.");
+      }
+
+      const fichaOriginal = fichaSnap.data();
+
+      const fichaComPermissao = {
+        ...dadosAtualizados,
+        uid: fichaOriginal.uid, // mantém o dono original da ficha
+        usuario: fichaOriginal.usuario, // também pode manter o nome
+      };
+
+      const campanhaRef = doc(
+        db,
+        "campanhas",
+        dadosAtualizados.config.belongs_input
+      );
+
+      const campanhaSnap = await getDoc(campanhaRef);
+
+      if (!campanhaSnap.exists()) {
+        throw new Error("Campanha não encontrada.");
+      }
+
+      const campanhaData = campanhaSnap.data();
+
+      if (campanhaData.mestreId !== user.uid) {
+        throw new Error("Você não tem permissão para editar essa ficha.");
+      }
+
+      await updateDoc(fichaRef, fichaComPermissao);
       console.log("Ficha atualizada com sucesso!");
     } catch (error) {
       console.error("Erro ao atualizar a ficha:", error.message);
@@ -190,7 +300,17 @@ export function AuthProvider({ children }) {
         ...dados,
         jogadoresUids: [],
         mestreId: user.uid,
+        username: user.displayName,
         criadoEm: new Date(),
+        jogadores: [
+          {
+            username: user.displayName,
+            viewOpening: true,
+            fichas: [],
+            uid: user.uid,
+            papel: "mestre",
+          },
+        ],
       });
       console.log("Campanha criada com ID:", docRef.id);
       return docRef.id;
@@ -206,7 +326,10 @@ export function AuthProvider({ children }) {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        return docSnap.data();
+        return {
+          id: docSnap.id,
+          ...docSnap.data(),
+        };
       } else {
         throw new Error("Campanha não encontrada.");
       }
@@ -245,7 +368,8 @@ export function AuthProvider({ children }) {
     const novoJogador = {
       uid: user.uid,
       username: user.displayName || "Jogador",
-      fichas: [], // já segue a nova estrutura
+      viewOpening: true,
+      fichas: [],
     };
 
     if (campanha.jogadores?.some((j) => j.uid === user.uid)) {
@@ -254,6 +378,13 @@ export function AuthProvider({ children }) {
 
     const permissaoFichas = campanha.configGeral?.permissaoFichas;
     const senhaAcesso = campanha.configGeral?.senha_acesso;
+
+    const maxPlayers = parseInt(campanha.configGeral?.max_players || 0) + 1;
+    const jogadoresAtuais = campanha.jogadores?.length || 0;
+
+    if (maxPlayers > 0 && jogadoresAtuais >= maxPlayers) {
+      throw new Error("A campanha atingiu o número máximo de jogadores.");
+    }
 
     if (permissaoFichas === "auto") {
       if (senhaAcesso && senhaAcesso !== senhaDigitada) {
@@ -397,6 +528,7 @@ export function AuthProvider({ children }) {
     const campanha = campanhaSnap.data();
 
     const todosConteudos = campanha.contents || [];
+
     const visiveis = todosConteudos;
 
     return visiveis.sort(
@@ -499,15 +631,23 @@ export function AuthProvider({ children }) {
       await updateDoc(campanhaRef, { jogadores });
 
       const fichaRef = doc(db, "fichas", fichaId);
-      await updateDoc(fichaRef, {
+      const fichaUpdate = {
         "config.belongs": "sim",
         "config.belongs_input": campanhaId,
-      });
+      };
+
+      const fichaSnap = await getDoc(fichaRef);
+      const fichaData = fichaSnap.data();
+      if (fichaData?.config?.view === "privada") {
+        fichaUpdate["config.view"] = "privada_link";
+      }
+
+      await updateDoc(fichaRef, fichaUpdate);
 
       return true;
     } catch (error) {
       console.error("Erro ao adicionar ficha à campanha:", error.message);
-      throw error; // deixa estourar o erro para o front exibir
+      throw error;
     }
   };
 
@@ -541,6 +681,8 @@ export function AuthProvider({ children }) {
         await updateDoc(fichaRef, {
           "config.belongs": "nao",
           "config.belongs_input": "",
+          "config.campaigns_players": "nao",
+          "config.campaigns_master": "",
         });
 
         console.log("Ficha desvinculada com sucesso!");
@@ -592,11 +734,177 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const alterarViewOpening = async (idCampanha, uidJogador, novoValor) => {
+    try {
+      const campanhaRef = doc(db, "campanhas", idCampanha);
+      const campanhaSnap = await getDoc(campanhaRef);
+
+      if (campanhaSnap.exists()) {
+        const campanhaData = campanhaSnap.data();
+        const jogadores = campanhaData.jogadores || [];
+
+        const index = jogadores.findIndex((j) => j.uid === uidJogador);
+
+        if (index !== -1) {
+          jogadores[index].viewOpening = novoValor;
+
+          await updateDoc(campanhaRef, {
+            jogadores,
+          });
+        } else {
+          console.warn("Jogador não encontrado na campanha.");
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao alterar viewOpening:", error);
+    }
+  };
+
+  const listarCampanhasPublicas = async () => {
+    try {
+      const campanhasSnapshot = await getDocs(
+        query(
+          collection(db, "campanhas"),
+          where("configGeral.visibilidade", "==", "publico")
+        )
+      );
+
+      const campanhas = campanhasSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      return { campanhas };
+    } catch (error) {
+      console.error("Erro ao listar campanhas públicas:", error);
+      return { campanhas: [] };
+    }
+  };
+
+  const excluirCampanha = async (idCampanha) => {
+    try {
+      await deleteDoc(doc(db, "campanhas", idCampanha));
+      alert("Campanha excluída com sucesso!");
+      router.push("/campaigns");
+    } catch (error) {
+      console.error("Erro ao excluir campanha:", error);
+      alert("Erro ao excluir campanha.");
+    }
+  };
+
+  const toggleLikeCampanha = async (collectionName, docId, user, action) => {
+    try {
+      const userLikeRef = doc(db, collectionName, docId, "likes", user.uid);
+
+      const userLikeDoc = await getDoc(userLikeRef);
+
+      if (action === "like") {
+        if (userLikeDoc.exists()) {
+          await deleteDoc(userLikeRef);
+        } else {
+          await setDoc(userLikeRef, { likedAt: new Date() });
+        }
+      }
+
+      if (action === "buscar") {
+        return {
+          liked: userLikeDoc.exists(),
+          likes: (await getDocs(collection(db, collectionName, docId, "likes")))
+            .size,
+        };
+      }
+
+      const updatedLikesSnap = await getDocs(
+        collection(db, collectionName, docId, "likes")
+      );
+
+      return {
+        liked: !userLikeDoc.exists(),
+        likes: updatedLikesSnap.size,
+      };
+    } catch (error) {
+      console.error("Erro ao atualizar curtida:", error);
+      return { liked: false, likes: 0 };
+    }
+  };
+
+  const toggleLikeFicha = async (collectionName, docId, user, action) => {
+    try {
+      const userLikeRef = doc(db, collectionName, docId, "likes", user.uid);
+      const userLikeDoc = await getDoc(userLikeRef);
+
+      if (action === "like") {
+        if (userLikeDoc.exists()) {
+          await deleteDoc(userLikeRef);
+        } else {
+          await setDoc(userLikeRef, { likedAt: new Date() });
+        }
+      }
+
+      if (action === "buscar") {
+        return {
+          liked: userLikeDoc.exists(),
+          likes: (await getDocs(collection(db, collectionName, docId, "likes")))
+            .size,
+        };
+      }
+
+      const updatedLikesSnap = await getDocs(
+        collection(db, collectionName, docId, "likes")
+      );
+
+      return {
+        liked: !userLikeDoc.exists(),
+        likes: updatedLikesSnap.size,
+      };
+    } catch (error) {
+      console.error("Erro ao atualizar curtida:", error);
+      return { liked: false, likes: 0 };
+    }
+  };
+
+  const getFichasCampanhaVisiveis = async (
+    jogadores,
+    currentUser,
+    mestreId
+  ) => {
+    const fichasVisiveis = [];
+
+    for (const jogador of jogadores || []) {
+      for (const fichaId of jogador.fichas || []) {
+        const fichaRef = doc(db, "fichas", fichaId);
+        const fichaSnap = await getDoc(fichaRef);
+
+        if (!fichaSnap.exists()) continue;
+
+        const fichaData = fichaSnap.data();
+
+        const isOwner = fichaData.uid === currentUser.uid;
+        const isMestre = currentUser.uid === mestreId;
+        const isPublica = fichaData.config.view === "publica";
+        const isPrivadaLink = fichaData.config.view === "privada_link";
+        const permitirVer = fichaData.config.campaigns_players === "sim";
+
+        if (isMestre) {
+          fichasVisiveis.push({ id: fichaSnap.id, ...fichaData });
+          continue;
+        }
+
+        if (isOwner || isPublica || (isPrivadaLink && permitirVer)) {
+          fichasVisiveis.push({ id: fichaSnap.id, ...fichaData });
+        }
+      }
+    }
+
+    return fichasVisiveis;
+  };
+
   return (
     <AuthContext.Provider
       value={{
         user,
         loadingPage,
+        setImageFicha,
         signUp,
         signIn,
         logout,
@@ -605,6 +913,7 @@ export function AuthProvider({ children }) {
         carregarMinhasFichas,
         abrirFicha,
         editarFicha,
+        editarFichaMestre,
         criarCampanha,
         abrirCampanha,
         editarCampanha,
@@ -618,6 +927,12 @@ export function AuthProvider({ children }) {
         adicionarFichaCampanha,
         desvincularFichaDaCampanha,
         getFichasCampanha,
+        alterarViewOpening,
+        listarCampanhasPublicas,
+        excluirCampanha,
+        toggleLikeCampanha,
+        toggleLikeFicha,
+        getFichasCampanhaVisiveis,
       }}
     >
       {children}

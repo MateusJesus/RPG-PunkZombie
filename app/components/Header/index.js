@@ -51,7 +51,7 @@ export default function Header() {
       <AppBar
         position="fixed"
         sx={{
-          zIndex: 5,
+          zIndex: 10,
         }}
       >
         <Toolbar

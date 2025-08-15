@@ -1,0 +1,35 @@
+.informacoes_perso {
+  width: 100%;
+  height: 100%;
+}
+
+.content_perso {
+  display: flex;
+  height: 100%;
+  gap: 9px;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.inf_item {
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+}
+
+.inf_item label {
+  display: flex;
+  flex-direction: column;
+  text-transform: uppercase;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.content_perso input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1050px) {
+}

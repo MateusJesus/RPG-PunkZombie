@@ -2,15 +2,194 @@
 
 import classStyled from "./personagem.module.css";
 import { FaFileImage } from "react-icons/fa";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { IoShieldSharp } from "react-icons/io5";
-import RemoveItem from "../../Buttons/RemoveItem";
+import RemoveItem from "../../../Buttons/RemoveItem";
+import ContentFicha from "../ContentFicha";
+import InformationCharacter from "./InformationCharacter";
+import StatusCharacter from "./StatusCharacter";
+import Characteristic from "./Characteristics";
+import InputFicha from "../InputFicha";
+import ImageCharacter from "./ImageCharacter";
+import Attributes from "./Attributes";
+import Pericias from "./Pericias";
+import TitleContent from "../TitleContent";
 
 export default function Character({
+  user,
   handleChange,
   formData,
   setFormData,
 }) {
+  useEffect(() => {
+    calcularPer();
+  }, [formData.atributos, formData.status.status_niv]);
+
+  const textFieldsCharacter = {
+    camposInformacoes: [
+      {
+        label: "Nome do Jogador",
+        name: "informacoes.nome_jogador",
+        id: "nomeJogador",
+        type: "disabled",
+        maxLength: 20,
+      },
+      {
+        label: "Variante",
+        name: "informacoes.variante",
+        id: "variante",
+        type: "text",
+        maxLength: 15,
+      },
+      {
+        label: "Origem",
+        name: "informacoes.origem",
+        id: "origem",
+        type: "text",
+        maxLength: 15,
+      },
+      {
+        label: "Classe",
+        name: "informacoes.classe",
+        id: "classe",
+        type: "text",
+        maxLength: 15,
+      },
+      {
+        label: "Resistência",
+        name: "informacoes.resistencia",
+        id: "resistPer",
+        type: "text",
+        maxLength: 30,
+      },
+    ],
+
+    campsStatus: [
+      {
+        title: "NIV",
+        camps: [
+          {
+            name: "status.status_niv",
+            maxLength: "2",
+            type: "text",
+            maxLength: 2,
+          },
+        ],
+      },
+      {
+        title: "PV",
+        camps: [
+          {
+            name: "status.status_pdv",
+            maxLength: "2",
+            type: "text",
+            maxLength: 2,
+          },
+          {
+            name: "status.status_pdvtot",
+            maxLength: "2",
+            type: "text",
+            maxLength: 2,
+          },
+        ],
+      },
+
+      {
+        title: "STA",
+        camps: [
+          {
+            name: "status.status_sta",
+            maxLength: "2",
+            type: "text",
+            maxLength: 2,
+          },
+          {
+            name: "status.status_statot",
+            maxLength: "2",
+            type: "text",
+            maxLength: 2,
+          },
+        ],
+      },
+
+      {
+        title: "PDI",
+        camps: [
+          {
+            name: "status.status_pdi",
+            maxLength: "2",
+            type: "text",
+            maxLength: 2,
+          },
+          {
+            name: "status.status_pditot",
+            maxLength: "2",
+            type: "text",
+            maxLength: 2,
+          },
+        ],
+      },
+      {
+        title: "DEF",
+        camps: [
+          {
+            name: "defesa.defesatot",
+            maxLength: "2",
+            type: "disabled",
+          },
+        ],
+      },
+    ],
+
+    campAparencia: [
+      {
+        name: "caracteristicas.aparencia",
+        type: "textarea",
+        maxLength: 450,
+      },
+    ],
+
+    campPersonalidade: [
+      {
+        name: "caracteristicas.personalidade",
+        type: "textarea",
+        maxLength: 450,
+      },
+    ],
+
+    camposAtributos: [
+      {
+        title: "FOR",
+        name: "atributos.atri_for",
+        type: "text",
+        maxLength: 2,
+      },
+      {
+        title: "INT",
+        name: "atributos.atri_int",
+        type: "text",
+        maxLength: 2,
+      },
+      {
+        title: "AGI",
+        name: "atributos.atri_agi",
+        type: "text",
+        maxLength: 2,
+      },
+      {
+        title: "VIG",
+        name: "atributos.atri_vig",
+        type: "text",
+        maxLength: 2,
+      },
+      {
+        title: "CAR",
+        name: "atributos.atri_car",
+        type: "text",
+        maxLength: 2,
+      },
+    ],
+  };
 
   const calcularPer = () => {
     setFormData((prevFormData) => {
@@ -33,94 +212,83 @@ export default function Character({
     });
   };
 
-  const changePericia = (e, index) => {
-    const { name, value } = e.target;
-
-    setFormData((prevFormData) => {
-      const updatedPericias = prevFormData.pericias?.map((pericia, idx) => {
-        if (idx === index) {
-          return {
-            ...pericia,
-            [name]: value,
-          };
-        }
-        return pericia;
-      });
-
-      return { ...prevFormData, pericias: updatedPericias };
-    });
-    calcularPer();
-  };
-
-  const handlePericiaAdd = () => {
-    setFormData({
-      ...formData,
-      pericias: [
-        ...formData.pericias,
-        {
-          soma: 2,
-          nomePericia: "",
-          atributoPer: "",
-          outros: 0,
-        },
-      ],
-    });
-    calcularPer();
-  };
-
-  const handlePericiaRemove = (index) => {
-    setFormData({
-      ...formData,
-      pericias: formData.pericias.filter((_, idx) => idx !== index),
-    });
-  };
-
-  const selectPericias = [
-    { label: "ACROBACIA", value: "AGI", penArmadura: true },
-    { label: "ADESTRAMENTO", value: "CAR", treinado: true },
-    { label: "ARTES", value: "CAR" },
-    { label: "APARÊNCIA", value: "CAR" },
-    { label: "ATLETISMO", value: "FOR", penArmadura: true },
-    { label: "CAVALGAR", value: "AGI", treinado: true },
-    { label: "CIÊNCIAS", value: "INT", treinado: true },
-    { label: "CONHECIMENTO", value: "INT", treinado: true },
-    { label: "CULINÁRIA", value: "INT" },
-    { label: "CRIME", value: "AGI", treinado: true, penArmadura: true },
-    { label: "DIPLOMACIA", value: "CAR" },
-    { label: "ENGANAÇÃO", value: "CAR" },
-    { label: "FOFOCA", value: "CAR" },
-    { label: "FORTITUDE", value: "VIG" },
-    { label: "FURTIVIDADE", value: "AGI", penArmadura: true },
-    { label: "INICIATIVA", value: "AGI", penArmadura: true },
-    { label: "INTIMIDAÇÃO", value: "CAR" },
-    { label: "INTUIÇÃO", value: "CAR" },
-    { label: "INVESTIGAÇÃO", value: "INT" },
-    { label: "LENDAS", value: "INT", treinado: true },
-    { label: "LUTA", value: "FOR" },
-    { label: "MECÂNICA", value: "INT", treinado: true },
-    { label: "MEDICINA", value: "INT", treinado: true },
-    { label: "MUTÁGENO", value: "INT", treinado: true },
-    { label: "PERCEPÇÃO", value: "CAR" },
-    { label: "PILOTAGEM", value: "AGI", treinado: true },
-    { label: "PONTARIA", value: "AGI", treinado: true },
-    { label: "PROFISSÃO", value: "INT", treinado: true },
-    { label: "REFLEXOS", value: "AGI", penArmadura: true },
-    { label: "RELIGIÃO", value: "CAR", treinado: true },
-    { label: "SOBREVIVÊNCIA", value: "INT" },
-    { label: "TÁTICA", value: "INT", treinado: true },
-    { label: "TECNOLOGIA", value: "INT", treinado: true },
-    { label: "VONTADE", value: "CAR" },
-  ];
-
   return (
     <section className={classStyled.personagem}>
-      <h2 className={classStyled.title_content + " title_content"}>
-        Personagem
-      </h2>
+      <TitleContent formData={formData}>Personagem</TitleContent>
       <div className={classStyled.sobre_personagem}>
         <div className={classStyled.informacoes_status}>
           <div className={classStyled.div_inf_stat}>
-            <div className={classStyled.informacoes_perso + " box"}>
+            <ContentFicha title="Informações" formData={formData}>
+              <InformationCharacter
+                user={user}
+                formData={formData}
+                handleChange={handleChange}
+                textFields={textFieldsCharacter.camposInformacoes}
+              />
+            </ContentFicha>
+
+            <StatusCharacter
+              formData={formData}
+              handleChange={handleChange}
+              textFields={textFieldsCharacter.campsStatus}
+            />
+          </div>
+
+          <div className={classStyled.carac_personagem}>
+            <ContentFicha title="Aparência" formData={formData}>
+              <Characteristic
+                formData={formData}
+                handleChange={handleChange}
+                textFields={textFieldsCharacter.campAparencia}
+              />
+            </ContentFicha>
+
+            <ContentFicha title="Personalidade" formData={formData}>
+              <Characteristic
+                formData={formData}
+                handleChange={handleChange}
+                textFields={textFieldsCharacter.campPersonalidade}
+              />
+            </ContentFicha>
+          </div>
+        </div>
+        <div className={classStyled.resistencia_foto}>
+          <ContentFicha title="Nome do Personagem" formData={formData}>
+            <InputFicha
+              type="text"
+              formData={formData}
+              name="informacoes.nome_personagem"
+              value={formData.informacoes?.nome_personagem}
+              onChange={handleChange}
+            />
+          </ContentFicha>
+
+          <ContentFicha formData={formData}>
+            <ImageCharacter formData={formData} setFormData={setFormData} /> 
+          </ContentFicha>
+        </div>
+        <div className={classStyled.atri_peri}>
+          <Attributes
+            textFields={textFieldsCharacter.camposAtributos}
+            handleChange={handleChange}
+            formData={formData}
+          />
+
+          <ContentFicha title="perícias" formData={formData}>
+            <Pericias
+              setFormData={setFormData}
+              formData={formData}
+              calcularPer={calcularPer}
+            />
+          </ContentFicha>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+{
+  /* <div className={classStyled.informacoes_perso + " box"}>
               <h2 className={classStyled.title_content + " title_content"}>
                 Informações
               </h2>
@@ -179,8 +347,10 @@ export default function Character({
                   />
                 </div>
               </div>
-            </div>
-            <div className={classStyled.status}>
+            </div> */
+}
+{
+  /* <div className={classStyled.status}>
               <div className={classStyled.status_content}>
                 <div className={classStyled.if_status + " box"}>
                   <h2 className={classStyled.title_content + " title_content"}>
@@ -281,10 +451,11 @@ export default function Character({
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className={classStyled.carac_personagem}>
-            <div className={classStyled.caracteristica + " box"}>
+            </div> */
+}
+
+{
+  /* <div className={classStyled.caracteristica + " box"}>
               <h2 className="title_content">Aparência</h2>
               <textarea
                 name="caracteristicas.aparencia"
@@ -303,49 +474,10 @@ export default function Character({
                 value={formData.caracteristicas.personalidade}
                 onChange={handleChange}
               ></textarea>
-            </div>
-          </div>
-        </div>
-        <div className={classStyled.resistencia_foto}>
-          <div className={classStyled.resistencia + " box"}>
-            <h2 className={classStyled.title_content + " title_content"}>
-              Nome
-            </h2>
-            <input
-              type="text"
-              name="informacoes.nome_personagem"
-              value={formData.informacoes.nome_personagem}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={classStyled.imagem_perso + " box"}>
-            {formData.imagem ? (
-              <img src={formData.imagem || ""} alt="Imagem do personagem" />
-            ) : (
-              <label
-                htmlFor="inputImgPerso"
-                className={classStyled.custom_file_upload}
-              >
-                <span>
-                  <FaFileImage className={classStyled.icon} />
-                  <br />
-                  Clique ou arraste e
-                  <br />
-                  solte sua imagem aqui.
-                </span>
-                <input
-                  id="inputImgPerso"
-                  type="file"
-                  name="inputImgPerso"
-                  accept=".jpg, .jpeg, .png"
-                  //onChange={handleImageChange}
-                />
-              </label>
-            )}
-          </div>
-        </div>
-        <div className={classStyled.atri_peri}>
-          <div className={classStyled.atributos}>
+            </div> */
+}
+{
+  /* <div className={classStyled.atributos}>
             <div className={classStyled.atributo + " box"}>
               <h2 className={classStyled.title_content + " title_content"}>
                 FOR
@@ -406,8 +538,12 @@ export default function Character({
                 onChange={handleChange}
               />
             </div>
-          </div>
-          <div className={classStyled.pericias + " box"}>
+          </div> */
+}
+
+{
+  /* <div className={classStyled.pericias + " box"}>
+
             <h2 className={classStyled.title_content + " title_content"}>
               Perícias
             </h2>
@@ -509,9 +645,5 @@ export default function Character({
                 <strong>ADICIONAR PERÍCIA</strong>
               </button>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+          </div> */
 }

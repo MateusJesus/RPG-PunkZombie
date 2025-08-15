@@ -1,0 +1,21 @@
+.atributos {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.atributos .title_content {
+  height: 4em;
+}
+
+.atributos input {
+  font-size: 17px;
+  text-align: center;
+  font-weight: 700;
+}
+
+@media (max-width: 1050px) {
+  .atributos {
+    width: 100%;
+  }
+}

@@ -25,7 +25,6 @@ export default function AddFichaModal({ open, handleClose, onEnviarFicha }) {
       try {
         const fichas = await carregarMinhasFichas();
         setFichasUsuario(fichas.fichas);
-        
       } catch (err) {
         console.error("Erro ao buscar fichas do usuário:", err.message);
       }
@@ -84,12 +83,12 @@ export default function AddFichaModal({ open, handleClose, onEnviarFicha }) {
         </FormControl>
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <Button variant="outlined" onClick={handleCriarNova}>
+          <Button color="secondary" variant="outlined" onClick={handleCriarNova}>
             Criar nova
           </Button>
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
             onClick={handleEnviar}
             disabled={!fichaSelecionada}
           >

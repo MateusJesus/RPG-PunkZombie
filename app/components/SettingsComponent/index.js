@@ -57,6 +57,7 @@ export default function SettingsComponent({
   setFormData,
   formData,
 }) {
+
   const [settings, setSettings] = useState({
     comfirm: false,
     belongs: formData.config.belongs || "nao",
@@ -69,8 +70,6 @@ export default function SettingsComponent({
   const { abrirCampanha, desvincularFichaDaCampanha } = useAuth();
 
   const [campanha, setCampanha] = useState(null);
-
-  console.log(formData);
 
   useEffect(() => {
     const fetchCampanha = async () => {
@@ -170,19 +169,29 @@ export default function SettingsComponent({
                     }
                     onChange={handleChange}
                   >
-                    {item.radio.map((radioItem) => (
-                      <div key={radioItem.id}>
-                        <FormControlLabel
-                          disabled={
-                            item.id === "campaigns_players" &&
-                            settings.view === "publica"
-                          }
-                          value={radioItem.value}
-                          control={<Radio />}
-                          label={radioItem.label}
-                        />
-                      </div>
-                    ))}
+                    {item.radio.map((radioItem) => {
+                      const isViewPrivateDisabled =
+                        item.id === "view" &&
+                        radioItem.value === "privada" &&
+                        settings.belongs === "sim";
+
+                      const isPlayersDisabled =
+                        item.id === "campaigns_players" &&
+                        settings.view === "publica";
+
+                      return (
+                        <div key={radioItem.id}>
+                          <FormControlLabel
+                            disabled={
+                              isViewPrivateDisabled || isPlayersDisabled
+                            }
+                            value={radioItem.value}
+                            control={<Radio />}
+                            label={radioItem.label}
+                          />
+                        </div>
+                      );
+                    })}
                   </RadioGroup>
                 </div>
               );
@@ -233,6 +242,5 @@ const style = {
   maxWidth: 600,
   width: "90%",
   bgcolor: "var(--color-1)",
-  border: "2px solid #000",
   boxShadow: 24,
 };
