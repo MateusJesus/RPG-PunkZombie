@@ -27,12 +27,14 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const pathname = usePathname();
   const router = useRouter();
+
   const [user, setUser] = useState(null);
   const [loadingPage, setLoadingPage] = useState(true);
   const [imageFicha, setImageFicha] = useState(null);
@@ -41,12 +43,17 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       if (authUser?.uid !== user?.uid) {
         setUser(authUser);
+        setLoadingPage(false);
       }
-      setLoadingPage(false);
     });
 
     return () => unsubscribe();
   }, [user]);
+
+  useEffect(() => {
+    setImageFicha(null);
+    console.log("imagem anulada");
+  }, [pathname]);
 
   const signUp = async (email, password, name) => {
     const userCredential = await createUserWithEmailAndPassword(
@@ -91,33 +98,92 @@ export function AuthProvider({ children }) {
     return await res.json(); // Retorna { url, public_id }
   };
 
-  const salvarFicha = async (ficha) => {
+  const processarImagemFicha = async (ficha, imageFicha) => {
     try {
-      if (!user) {
-        throw new Error("Usuário não autenticado.");
+      let fichaAtualizada = {
+        ...ficha,
+        imagem: "",
+        imagemId: "",
+      };
+
+      // Se já existe imagem antiga, deleta antes
+
+      if ((ficha.imagemId && imageFicha) || ficha.imagem === "delete") {
+        try {
+          const resDelete = await fetch(
+            `/api/uploadImgFicha?public_id=${ficha.imagemId}`,
+            { method: "DELETE" }
+          );
+          const deleteData = await resDelete.json();
+          console.log("Imagem antiga deletada:", deleteData);
+        } catch (err) {
+          console.error("Erro ao deletar imagem antiga:", err);
+        }
+
+        fichaAtualizada = {
+          ...ficha,
+          imagem: "",
+          imagemId: "",
+        };
+
+        // Limpa estado local
       }
 
       if (!imageFicha) {
-        console.log({ message: "imagem não encontrada.", data: imageFicha });
+        setImageFicha(null);
+        return {
+          ...ficha,
+          imagem: ficha.imagem === "delete" ? "" : ficha.imagem,
+          imagemId: ficha.imagem === "delete" ? "" : ficha.imagemId,
+        };
       } else {
-        uploadImageFicha;
-      }
+        // Faz upload da nova imagem
+        const uploadResult = await uploadImagemFicha(imageFicha);
+        console.log("Nova imagem enviada com sucesso:", uploadResult);
 
-      const fichaComUsuario = {
+        // Atualiza ficha com nova imagem
+        fichaAtualizada = {
+          ...ficha,
+          imagem: uploadResult.url,
+          imagemId: uploadResult.public_id,
+        };
+
+        // Limpa estado local
+        setImageFicha(null);
+
+        return fichaAtualizada;
+      }
+    } catch (err) {
+      console.error("Erro ao processar imagem:", err);
+      return ficha; // Se falhar, retorna ficha original
+    }
+  };
+
+  // Salvar ficha
+  const salvarFicha = async (ficha) => {
+    try {
+      if (!user) throw new Error("Usuário não autenticado.");
+
+      let fichaComUsuario = {
         ...ficha,
         uid: user.uid,
         usuario: user.displayName,
         data_hora: new Date(),
       };
 
+      // Processa a imagem antes de salvar
+      fichaComUsuario = await processarImagemFicha(fichaComUsuario, imageFicha);
+
       const fichasRef = collection(db, "fichas");
       const docRef = await addDoc(fichasRef, fichaComUsuario);
+
       return docRef.id;
     } catch (error) {
       console.error("Erro ao salvar a ficha:", error.message);
     }
   };
 
+  // Editar ficha
   const editarFicha = async (idFicha, dadosAtualizados) => {
     try {
       if (!user) throw new Error("Usuário não autenticado.");
@@ -128,41 +194,13 @@ export function AuthProvider({ children }) {
         usuario: user.displayName,
       };
 
-      // Se tem nova imagem
-      if (imageFicha) {
-        // Deleta imagem antiga se existir
-        if (dadosAtualizados.imagemId) {
-          try {
-            const resDelete = await fetch(
-              `/api/uploadImgFicha?public_id=${fichaComUsuario.imagemId}`,
-              { method: "DELETE" }
-            );
-            const deleteData = await resDelete.json();
-            console.log("Imagem antiga deletada:", deleteData);
-          } catch (err) {
-            console.error("Erro ao deletar imagem antiga:", err);
-          }
-        }
+      // Processa a imagem antes de atualizar
+      fichaComUsuario = await processarImagemFicha(fichaComUsuario, imageFicha);
 
-        // Faz upload da nova imagem usando a função separada
-        const uploadResult = await uploadImagemFicha(imageFicha);
-        console.log("Nova imagem enviada com sucesso:", uploadResult);
-
-        fichaComUsuario.imagem = uploadResult.url;
-        fichaComUsuario.imagemId = uploadResult.public_id;
-
-        // Limpa estado local
-        setImageFicha(null);
-      } else {
-        console.log("Nenhuma nova imagem enviada, mantendo a existente.");
-      }
-
-      // Atualiza ficha no Firestore
       const fichaRef = doc(db, "fichas", idFicha);
       await updateDoc(fichaRef, fichaComUsuario);
 
-      console.log("Ficha atualizada com sucesso!");
-      return true;
+      return fichaComUsuario;
     } catch (error) {
       console.error("Erro ao atualizar a ficha:", error.message);
       return false;
@@ -181,7 +219,6 @@ export function AuthProvider({ children }) {
         throw new Error("Campos obrigatórios da campanha ausentes no update.");
       }
 
-      // Busca a ficha original para preservar o uid do dono
       const fichaRef = doc(db, "fichas", idFicha);
       const fichaSnap = await getDoc(fichaRef);
 
@@ -193,8 +230,8 @@ export function AuthProvider({ children }) {
 
       const fichaComPermissao = {
         ...dadosAtualizados,
-        uid: fichaOriginal.uid, // mantém o dono original da ficha
-        usuario: fichaOriginal.usuario, // também pode manter o nome
+        uid: fichaOriginal.uid,
+        usuario: fichaOriginal.usuario,
       };
 
       const campanhaRef = doc(
@@ -278,18 +315,17 @@ export function AuthProvider({ children }) {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        setLoadingPage(false);
-        return {
+        const dadosFicha = {
           id: docSnap.id,
           ...docSnap.data(),
         };
+
+        return dadosFicha;
       } else {
         console.log("Ficha não encontrada");
         return null;
       }
     } catch (error) {
-      setLoadingPage(false);
-      console.error("Erro ao carregar ficha:", error);
       return null;
     }
   };
@@ -904,6 +940,7 @@ export function AuthProvider({ children }) {
       value={{
         user,
         loadingPage,
+        setLoadingPage,
         setImageFicha,
         signUp,
         signIn,

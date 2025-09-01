@@ -5,7 +5,7 @@ import attrStyled from "./attributes.module.css";
 import InputFicha from "../../InputFicha";
 import ContentFicha from "../../ContentFicha";
 
-export default function Attributes({ handleChange, textFields, formData }) {
+export default function Attributes({ handleBlur, textFields, formData }) {
   const getValue = (obj, path) => {
     return path.split(".").reduce((acc, part) => acc?.[part] ?? "", obj);
   };
@@ -22,7 +22,7 @@ export default function Attributes({ handleChange, textFields, formData }) {
               name={field.name}
               type={field.type}
               value={getValue(formData, field.name)}
-              onChange={handleChange}
+              onBlur={handleBlur}
             />
           </ContentFicha>
         </div>

@@ -18,6 +18,102 @@ import { useRouter } from "next/navigation";
 import Customize from "./ComponentsFicha/Customize";
 
 export default function FichaRPG({ idFicha }) {
+  const [campaignData, setCampaignData] = useState({});
+  const [saved, setSaved] = useState(true);
+  const router = useRouter();
+  const [openSpeedDial, setOpenSpeedDial] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
+  const [openCustomize, setOpenCustomize] = useState(false);
+  const [loadingPage, setLoadingPage] = useState(true);
+  const [justSee, setJustSee] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState({
+    open: false,
+    title: "Carregando",
+    message: "Salvando imagem  da ficha...",
+    icon: <CircularProgress style={{ fontSize: 60, color: "#4caf50" }} />,
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const {
+    user,
+    salvarFicha,
+    abrirFicha,
+    abrirCampanha,
+    editarFicha,
+    editarFichaMestre,
+  } = useAuth();
+
+  const [formDataOld, setFormDataOld] = useState({
+    carga: "",
+    imagem: null,
+    informacoes: {
+      nome_jogador: "",
+      nome_personagem: "",
+      variante: "",
+      origem: "",
+      classe: "",
+      resistencia: "",
+    },
+    status: {
+      status_niv: "",
+      status_sta: "",
+      status_statot: "",
+      status_pdi: "",
+      status_pditot: "",
+      status_pdv: "",
+      status_pdvtot: "",
+    },
+    caracteristicas: {
+      aparencia: "",
+      personalidade: "",
+    },
+    atributos: {
+      atri_for: "",
+      atri_int: "",
+      atri_agi: "",
+      atri_vig: "",
+      atri_car: "",
+    },
+    pericias: [],
+    equipamentos: [],
+    vestimentas: [],
+    armas: [],
+    proficiencia: [],
+    defesa: {
+      defesatot: 10,
+    },
+    camp1_camp2: {
+      titleCamp1: "",
+      textCamp1: "",
+      titleCamp2: "",
+      textCamp2: "",
+    },
+    camp3: [],
+    camp4: [],
+    config: {
+      comfirm: false,
+      belongs: "",
+      view: "",
+      campaigns_master: "",
+      campaigns_players: "",
+      belongs_input: "",
+    },
+    customize: {
+      tema: "",
+      fungo: "",
+      color: {
+        color_box: "",
+        color_input: "",
+        color_box_title: "",
+        color_fonte: "",
+      },
+    },
+  });
+
   const [formData, setFormData] = useState({
     carga: "",
     imagem: null,
@@ -85,35 +181,6 @@ export default function FichaRPG({ idFicha }) {
     },
   });
 
-  const [campaignData, setCampaignData] = useState({});
-  const router = useRouter();
-  const [openSpeedDial, setOpenSpeedDial] = useState(false);
-  const [openSettings, setOpenSettings] = useState(false);
-  const [openCustomize, setOpenCustomize] = useState(false);
-  const [justSee, setJustSee] = useState(false);
-  const [loadingSave, setLoadingSave] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState({
-    open: false,
-    title: "Carregando",
-    message: "Salvando imagem  da ficha...",
-    icon: <CircularProgress style={{ fontSize: 60, color: "#4caf50" }} />,
-  });
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
-
-  const {
-    user,
-    salvarFicha,
-    abrirFicha,
-    abrirCampanha,
-    loadingPage,
-    editarFicha,
-    editarFichaMestre,
-  } = useAuth();
-
   const handleCloseSpeedDial = () => setOpenSpeedDial(false);
 
   const handleSpeedDialAction = async (name) => {
@@ -122,7 +189,7 @@ export default function FichaRPG({ idFicha }) {
     } else if (name === "Customização") {
       setOpenCustomize(true);
     } else if (name === "Save") {
-      setLoadingSave(true);
+      setLoadingPage(true);
 
       try {
         if (idFicha) {
@@ -132,18 +199,24 @@ export default function FichaRPG({ idFicha }) {
             campaignData?.id === formData.config.belongs_input
           ) {
             await editarFichaMestre(idFicha, formData);
+            
             setSnackbar({
               open: true,
               message: "Ficha editada com sucesso!",
               severity: "success",
             });
+            setSaved(true);
           } else {
-            await editarFicha(idFicha, formData);
+            const dadosFicha = await editarFicha(idFicha, formData);
+            setFormDataOld(dadosFicha);
+            setFormData(dadosFicha);
+
             setSnackbar({
               open: true,
               message: "Ficha editada com sucesso!",
               severity: "success",
             });
+            setSaved(true);
           }
         } else {
           if (formData.config.belongs === "") {
@@ -161,6 +234,7 @@ export default function FichaRPG({ idFicha }) {
               title: "Ficha criada com sucesso!",
               message: "Redirecionando...",
             });
+            setSaved(true);
             setTimeout(() => {
               setShowSuccessDialog({ open: false });
               router.push("/ficha/" + idFichaSalva);
@@ -175,16 +249,17 @@ export default function FichaRPG({ idFicha }) {
           severity: "error",
         });
       } finally {
-        setLoadingSave(false);
+        setLoadingPage(false);
       }
     }
     handleCloseSpeedDial();
   };
 
-  const handleChange = (e) => {
+  const handleBlur = (e) => {
     if (!justSee) return;
 
     const { name, value } = e.target;
+
     setFormData((prevData) => {
       const keys = name.split(".");
       let updatedData = { ...prevData };
@@ -196,6 +271,14 @@ export default function FichaRPG({ idFicha }) {
       return updatedData;
     });
   };
+
+  useEffect(() => {
+    if (JSON.stringify(formData) !== JSON.stringify(formDataOld)) {
+      setSaved(false);
+    } else {
+      setSaved(true);
+    }
+  }, [formData]);
 
   useEffect(() => {
     if (!idFicha) {
@@ -214,6 +297,7 @@ export default function FichaRPG({ idFicha }) {
         },
       }));
 
+      setLoadingPage(false);
       setJustSee(true);
       return;
     }
@@ -232,8 +316,6 @@ export default function FichaRPG({ idFicha }) {
           });
           return;
         }
-
-        setFormData(dadosFicha);
 
         let permissaoEdicao = false;
 
@@ -256,6 +338,10 @@ export default function FichaRPG({ idFicha }) {
           permissaoEdicao = true;
         }
 
+        setFormDataOld(dadosFicha);
+        setFormData(dadosFicha);
+
+        setLoadingPage(false);
         setJustSee(permissaoEdicao);
       } catch (error) {
         console.error("Erro ao carregar ficha:", error);
@@ -270,7 +356,12 @@ export default function FichaRPG({ idFicha }) {
     fetchFicha();
   }, [idFicha, user]);
 
-  if (loadingPage) return <LoadingPage />;
+  if (loadingPage)
+    return (
+      <div>
+        <LoadingPage />
+      </div>
+    );
 
   return (
     <div>
@@ -293,6 +384,7 @@ export default function FichaRPG({ idFicha }) {
           />
 
           <SpeedDialComponent
+            saved={saved}
             SpeedDialActions={SpeedDialActions}
             openSpeedDial={openSpeedDial}
             setOpenSpeedDial={setOpenSpeedDial}
@@ -302,13 +394,12 @@ export default function FichaRPG({ idFicha }) {
       )}
 
       <Character
+        setSaved={setSaved}
         user={user}
-        handleChange={handleChange}
+        handleBlur={handleBlur}
         formData={formData}
         setFormData={setFormData}
       />
-
-      {loadingSave && <LoadingPage />}
 
       <Snackbar
         open={snackbar.open}

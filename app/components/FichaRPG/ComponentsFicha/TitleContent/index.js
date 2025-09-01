@@ -42,7 +42,7 @@ export default function TitleContent({ children, formData, style }) {
       backgroundPosition: "center center",
       backgroundRepeat: "no-repeat",
       mixBlendMode: tema === "fungo" ? "screen" : "",
-      backgroundColor: `${color.color_box_title}`,
+      backgroundColor: `${color?.color_box_title}`,
       backgroundSize: style?.height
         ? `auto ${style?.height + 1}em`
         : "auto 3.1em",

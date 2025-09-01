@@ -10,7 +10,7 @@ export default function InputFicha({
   type,
   value,
   disabled,
-  onChange,
+  onBlur,
   formData,
 }) {
   const tema = formData?.customize?.tema;
@@ -26,7 +26,6 @@ export default function InputFicha({
     WebkitMaskRepeat: "no-repeat",
     maskImage: `url(${src})`,
     maskSize: "100% 100%",
-    with: "100%",
     maskRepeat: "no-repeat",
     opacity: 0.35,
     pointerEvents: "none",
@@ -91,8 +90,8 @@ export default function InputFicha({
             id={name}
             name={name}
             maxLength={maxLength}
-            value={value}
-            onChange={onChange}
+            defaultValue={value}
+            onBlur={onBlur} // 👈 chamando blur no textarea
           />
           {tema === "fungo" && <div style={getMaskStyle(bgTextarea.src)} />}
         </div>
@@ -101,14 +100,15 @@ export default function InputFicha({
           <input
             style={styled.custom_input}
             disabled={disabled}
+            {...(disabled && { value: value })}
             type={type}
             id={name}
             name={name}
             maxLength={maxLength}
-            value={value}
-            onChange={onChange}
+            {...(!disabled && { defaultValue: value })}
+            onBlur={onBlur} // 👈 chamando blur no input normal
           />
-          {tema === "fungo" && <div style={getMaskStyle(bgTextarea.src)} />}
+          {tema === "fungo" && <div style={getMaskStyle(bgInput.src)} />}
         </div>
       )}
     </div>

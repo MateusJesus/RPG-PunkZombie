@@ -4,12 +4,12 @@ import perStyled from "./pericias.module.css";
 import InputFicha from "../../InputFicha";
 import RemoveItem from "@/app/components/Buttons/RemoveItem";
 import ButtonAdd from "../../ButtonAdd";
+import { useEffect } from "react";
 
 export default function Pericias({ setFormData, formData, calcularPer }) {
   const fungo = formData?.customize?.fungo;
   const tema = formData?.customize?.tema;
   const color = formData?.customize?.color;
-
   const selectPericias = [
     { label: "ACROBACIA", value: "AGI", penArmadura: true },
     { label: "ADESTRAMENTO", value: "CAR", treinado: true },
@@ -46,6 +46,10 @@ export default function Pericias({ setFormData, formData, calcularPer }) {
     { label: "TECNOLOGIA", value: "INT", treinado: true },
     { label: "VONTADE", value: "CAR" },
   ];
+
+  useEffect(() => {
+    calcularPer();
+  }, [formData.atributos, formData?.status?.status_niv]);
 
   const changePericia = (e, index) => {
     const { name, value } = e.target;
@@ -243,7 +247,7 @@ export default function Pericias({ setFormData, formData, calcularPer }) {
                   <InputFicha
                     formData={formData}
                     disabled
-                    value={formData.status.status_niv || 0}
+                    value={parseInt(formData.status.status_niv / 2) || 0}
                   />
                 </td>
                 <td>
@@ -252,7 +256,7 @@ export default function Pericias({ setFormData, formData, calcularPer }) {
                     name={`outros`}
                     type="number"
                     value={pericia.outros}
-                    onChange={(e) => changePericia(e, index)}
+                    onBlur={(e) => changePericia(e, index)}
                   />
                 </td>
                 <td>

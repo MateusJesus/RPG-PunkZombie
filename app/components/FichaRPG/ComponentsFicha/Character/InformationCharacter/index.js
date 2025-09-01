@@ -4,7 +4,7 @@ import InformStyled from "./informationCharacter.module.css";
 import InputFicha from "../../InputFicha";
 
 export default function InformationFicha({
-  handleChange,
+  handleBlur,
   textFields,
   user,
   formData,
@@ -34,7 +34,7 @@ export default function InformationFicha({
                     : ""
                   : getValue(formData, field.name)
               }
-              onChange={handleChange}
+              onBlur={handleBlur}
             />
           </div>
         ))}

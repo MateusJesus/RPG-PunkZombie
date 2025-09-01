@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
-import { useAuth } from "../../contexts/AuthContext";
-import LoadingPage from "../Loading";
 
 export default function SpeedDialComponent({
   SpeedDialActions,
   openSpeedDial,
   setOpenSpeedDial,
+  saved,
   handleSpeedDialAction,
 }) {
   return (
@@ -19,9 +17,46 @@ export default function SpeedDialComponent({
         bottom: 16,
         right: 16,
         "& .MuiFab-primary": {
-          bgcolor: "secondary.main",
+          bgcolor: saved ? "secondary.main" : "red",
           color: "dark",
-          "&:hover": { bgcolor: "secondary.dark" },
+          "&:hover": {
+            bgcolor: saved ? "secondary.dark" : "red",
+            transform: "scale(1.1)",
+            animation: saved ? "none" : "pulseHover 0.8s infinite",
+          },
+          ...(saved
+            ? {}
+            : {
+                animation: "pulse 1.5s infinite",
+                "@keyframes pulse": {
+                  "0%": {
+                    transform: "scale(1)",
+                    boxShadow: "0 0 0 0 rgba(255,0,0,0.7)",
+                  },
+                  "70%": {
+                    transform: "scale(1.05)",
+                    boxShadow: "0 0 0 10px rgba(255,0,0,0)",
+                  },
+                  "100%": {
+                    transform: "scale(1)",
+                    boxShadow: "0 0 0 0 rgba(255,0,0,0)",
+                  },
+                },
+                "@keyframes pulseHover": {
+                  "0%": {
+                    transform: "scale(1.05)",
+                    boxShadow: "0 0 0 0 rgba(255,0,0,0.9)",
+                  },
+                  "70%": {
+                    transform: "scale(1.15)",
+                    boxShadow: "0 0 0 12px rgba(255,0,0,0)",
+                  },
+                  "100%": {
+                    transform: "scale(1.05)",
+                    boxShadow: "0 0 0 0 rgba(255,0,0,0)",
+                  },
+                },
+              }),
         },
       }}
       icon={<SpeedDialIcon />}
@@ -36,11 +71,58 @@ export default function SpeedDialComponent({
           tooltipTitle={action.name}
           onClick={() => handleSpeedDialAction(action.name)}
           sx={{
-            bgcolor: "secondary.main",
+            bgcolor:
+              action.name === "Save"
+                ? saved
+                  ? "secondary.main"
+                  : "red"
+                : "secondary.main",
             "&:hover": {
-              bgcolor: "secondary.dark",
+              bgcolor:
+                action.name === "Save"
+                  ? saved
+                    ? "secondary.main"
+                    : "red"
+                  : "secondary.dark",
               transform: "scale(1.1)",
+              animation:
+                action.name === "Save" && !saved
+                  ? "pulseHover 0.8s infinite"
+                  : "none",
             },
+            ...(action.name === "Save" && !saved
+              ? {
+                  animation: "pulse 1.5s infinite",
+                  "@keyframes pulse": {
+                    "0%": {
+                      transform: "scale(1)",
+                      boxShadow: "0 0 0 0 rgba(255,0,0,0.7)",
+                    },
+                    "70%": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0 0 0 10px rgba(255,0,0,0)",
+                    },
+                    "100%": {
+                      transform: "scale(1)",
+                      boxShadow: "0 0 0 0 rgba(255,0,0,0)",
+                    },
+                  },
+                  "@keyframes pulseHover": {
+                    "0%": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0 0 0 0 rgba(255,0,0,0.9)",
+                    },
+                    "70%": {
+                      transform: "scale(1.15)",
+                      boxShadow: "0 0 0 12px rgba(255,0,0,0)",
+                    },
+                    "100%": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0 0 0 0 rgba(255,0,0,0)",
+                    },
+                  },
+                }
+              : {}),
           }}
         />
       ))}

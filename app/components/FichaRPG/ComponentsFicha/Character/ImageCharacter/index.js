@@ -3,13 +3,7 @@
 import { useState, useRef } from "react";
 import ImgCharStyled from "./imageChar.module.css";
 import { FaFileImage } from "react-icons/fa";
-import {
-  Modal,
-  IconButton,
-  Menu,
-  MenuItem,
-  CircularProgress,
-} from "@mui/material";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 import { MoreVert } from "@mui/icons-material";
 import EditorImage from "../EditorImage";
 
@@ -41,27 +35,12 @@ export default function ImageCharacter({ formData, setFormData }) {
   };
 
   const handleDelete = async () => {
-    if (formData.imagemId) {
-      try {
-        const res = await fetch(
-          `/api/uploadImgFicha?public_id=${formData.imagemId}`,
-          {
-            method: "DELETE",
-          }
-        );
-        const data = await res.json();
-        console.log(data);
-      } catch (err) {
-        console.error("Erro ao deletar imagem:", err);
-      }
-    }
-
     setPreview("");
     setFormData((prev) => ({
       ...prev,
-      imagem: "", // para exibir
-      imagemId: "", // para deletar depois
+      imagem: "delete", // para exibir
     }));
+
     setAnchorEl(null);
   };
 
@@ -89,7 +68,7 @@ export default function ImageCharacter({ formData, setFormData }) {
         }}
       /> */}
 
-      {formData.imagem || preview ? (
+      {(formData.imagem && formData.imagem !== "delete") || preview ? (
         <>
           <img
             src={preview ? preview : formData.imagem}

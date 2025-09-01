@@ -17,7 +17,7 @@ export default function ButtonAdd({
       backgroundColor:
         tema === "fungo"
           ? `hsla(${fungo}deg 100%, 50%, 0.3)`
-          : color.color_box_title,
+          : color?.color_box_title,
       fontFamily: tema === "fungo" ? "abibas" : "",
       fontSize: "13px",
       borderRadius: "5px",

@@ -4,7 +4,7 @@ import CharStyled from "./characteristic.module.css";
 
 import InputFicha from "../../InputFicha";
 
-export default function Characteristic({ handleChange, textFields, formData }) {
+export default function Characteristic({ handleBlur, textFields, formData }) {
   const getValue = (obj, path) => {
     return path.split(".").reduce((acc, part) => acc?.[part] ?? "", obj);
   };
@@ -21,7 +21,7 @@ export default function Characteristic({ handleChange, textFields, formData }) {
               name={field.name}
               type={field.type}
               value={getValue(formData, field.name)}
-              onChange={handleChange}
+              onBlur={handleBlur}
             />
           </div>
         ))}

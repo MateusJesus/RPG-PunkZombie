@@ -5,11 +5,7 @@ import InputFicha from "../../InputFicha";
 import ContentFicha from "../../ContentFicha";
 import TitleContent from "../../TitleContent";
 
-export default function StatusCharacter({
-  handleChange,
-  textFields,
-  formData,
-}) {
+export default function StatusCharacter ({ handleBlur, textFields, formData }) {
   
   const getValue = (obj, path) => {
     return path.split(".").reduce((acc, part) => acc?.[part] ?? "", obj);
@@ -35,7 +31,7 @@ export default function StatusCharacter({
                       name={field.name}
                       type={field.type}
                       value={getValue(formData, field.name)}
-                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                 ))}
