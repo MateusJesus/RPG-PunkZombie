@@ -38,7 +38,7 @@ export default function ImageCharacter({ formData, setFormData }) {
     setPreview("");
     setFormData((prev) => ({
       ...prev,
-      imagem: "delete", // para exibir
+      imagem: "delete", 
     }));
 
     setAnchorEl(null);

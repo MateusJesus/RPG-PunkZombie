@@ -52,7 +52,6 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     setImageFicha(null);
-    console.log("imagem anulada");
   }, [pathname]);
 
   const signUp = async (email, password, name) => {
@@ -228,11 +227,16 @@ export function AuthProvider({ children }) {
 
       const fichaOriginal = fichaSnap.data();
 
-      const fichaComPermissao = {
+      let fichaComPermissao = {
         ...dadosAtualizados,
         uid: fichaOriginal.uid,
         usuario: fichaOriginal.usuario,
       };
+
+      fichaComPermissao = await processarImagemFicha(
+        fichaComPermissao,
+        imageFicha
+      );
 
       const campanhaRef = doc(
         db,
@@ -254,8 +258,34 @@ export function AuthProvider({ children }) {
 
       await updateDoc(fichaRef, fichaComPermissao);
       console.log("Ficha atualizada com sucesso!");
+
+      return fichaComPermissao;
     } catch (error) {
       console.error("Erro ao atualizar a ficha:", error.message);
+      return false;
+    }
+  };
+
+  const deletarFicha = async (ficha) => {
+    try {
+      if (!user) throw new Error("Usuário não autenticado.");
+
+      const fichaRef = doc(db, "fichas", ficha.id);
+
+      if (ficha.config.belongs_input) {
+        await desvincularFichaDaCampanha(ficha.id, ficha.config.belongs_input);
+      }
+
+      if (ficha.imagem) {
+        await processarImagemFicha(ficha, imageFicha);
+      }
+
+      await deleteDoc(fichaRef);
+      console.log("Ficha deletada com sucesso!");
+      return true;
+    } catch (error) {
+      console.error("Erro ao deletar a ficha:", error.message);
+      return false;
     }
   };
 
@@ -950,6 +980,7 @@ export function AuthProvider({ children }) {
         carregarMinhasFichas,
         abrirFicha,
         editarFicha,
+        deletarFicha,
         editarFichaMestre,
         criarCampanha,
         abrirCampanha,

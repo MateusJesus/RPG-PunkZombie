@@ -3,6 +3,7 @@
 import {
   Box,
   Button,
+  ButtonBase,
   FormControlLabel,
   FormLabel,
   Modal,
@@ -15,6 +16,8 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/app/contexts/AuthContext";
+import { CheckCircle } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 const fields = [
   {
@@ -30,6 +33,12 @@ const fields = [
         value: "privada_link",
       },
     ],
+  },
+  {
+    id: "delete",
+    type: "",
+    label: "Deseja deletar sua ficha?",
+    button: { id: "deleteButton", label: "Deletar ficha" },
   },
   {
     id: "campaigns_players",
@@ -53,11 +62,12 @@ const fields = [
 
 export default function SettingsComponent({
   openSettings,
+  setShowSuccessDialog,
   handleModal,
   setFormData,
   formData,
 }) {
-
+  const router = useRouter();
   const [settings, setSettings] = useState({
     comfirm: false,
     belongs: formData.config.belongs || "nao",
@@ -67,7 +77,7 @@ export default function SettingsComponent({
     belongs_input: formData.config.belongs_input || "",
   });
 
-  const { abrirCampanha, desvincularFichaDaCampanha } = useAuth();
+  const { abrirCampanha, desvincularFichaDaCampanha, deletarFicha } = useAuth();
 
   const [campanha, setCampanha] = useState(null);
 
@@ -115,6 +125,31 @@ export default function SettingsComponent({
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      setFormData((prevData) => ({
+        ...prevData,
+        imagem: "delete",
+      }));
+
+      const deleteFicha = await deletarFicha(formData);
+
+      if (deleteFicha) {
+        setShowSuccessDialog({
+          open: true,
+          icon: <CheckCircle style={{ fontSize: 60, color: "#4caf50" }} />,
+          title: "Ficha deletada com sucesso!",
+          message: "Redirecionando para o inicio...",
+        });
+        setTimeout(() => {
+          router.push("/");
+        }, 1500);
+      }
+    } catch (error) {
+      console.error("Erro ao deletar ficha:", error);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSettings((prev) => ({
@@ -157,7 +192,10 @@ export default function SettingsComponent({
             ) {
               return (
                 <div key={item.id}>
-                  <FormLabel>{item.label}</FormLabel>
+                  <FormLabel>
+                    {!formData.id && item.button ? "" : item.label}
+                  </FormLabel>
+
                   <RadioGroup
                     aria-labelledby={`${item.id}-label`}
                     name={item.id}
@@ -169,29 +207,42 @@ export default function SettingsComponent({
                     }
                     onChange={handleChange}
                   >
-                    {item.radio.map((radioItem) => {
-                      const isViewPrivateDisabled =
-                        item.id === "view" &&
-                        radioItem.value === "privada" &&
-                        settings.belongs === "sim";
+                    {item.button && formData.id && (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        onClick={handleDelete}
+                        sx={{ mb: 1.5 }}
+                      >
+                        {item.button.label}
+                      </Button>
+                    )}
 
-                      const isPlayersDisabled =
-                        item.id === "campaigns_players" &&
-                        settings.view === "publica";
+                    {item.radio &&
+                      item.radio.map((radioItem) => {
+                        const isViewPrivateDisabled =
+                          item.id === "view" &&
+                          radioItem.value === "privada" &&
+                          settings.belongs === "sim";
 
-                      return (
-                        <div key={radioItem.id}>
-                          <FormControlLabel
-                            disabled={
-                              isViewPrivateDisabled || isPlayersDisabled
-                            }
-                            value={radioItem.value}
-                            control={<Radio />}
-                            label={radioItem.label}
-                          />
-                        </div>
-                      );
-                    })}
+                        const isPlayersDisabled =
+                          item.id === "campaigns_players" &&
+                          settings.view === "publica";
+
+                        return (
+                          <div key={radioItem.id}>
+                            <FormControlLabel
+                              disabled={
+                                isViewPrivateDisabled || isPlayersDisabled
+                              }
+                              value={radioItem.value}
+                              control={<Radio />}
+                              label={radioItem.label}
+                            />
+                          </div>
+                        );
+                      })}
                   </RadioGroup>
                 </div>
               );
@@ -200,16 +251,26 @@ export default function SettingsComponent({
 
           <hr className="separation" />
 
-          {/* Campanha vinculada */}
           {settings.belongs === "sim" && (
             <Box sx={{ mt: 1, mb: 2 }}>
               <Typography variant="body1">
                 Esta ficha está vinculada à campanha:
               </Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                }}
+              >
                 <Typography
                   variant="subtitle1"
-                  sx={{ fontWeight: "bold", color: "var(--color-accent)" }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1.5em",
+                    color: "var(--color-accent)",
+                    fontFamily: "abibas",
+                  }}
                 >
                   {campanha?.configGeral?.nome || "Carregando..."}
                 </Typography>
@@ -219,7 +280,7 @@ export default function SettingsComponent({
                   color="error"
                   onClick={handleUnlink}
                 >
-                  Desvincular
+                  Desvincular da campanha
                 </Button>
               </Box>
             </Box>

@@ -199,7 +199,7 @@ export default function FichaRPG({ idFicha }) {
             campaignData?.id === formData.config.belongs_input
           ) {
             await editarFichaMestre(idFicha, formData);
-            
+
             setSnackbar({
               open: true,
               message: "Ficha editada com sucesso!",
@@ -371,6 +371,7 @@ export default function FichaRPG({ idFicha }) {
         <>
           <SettingsComponent
             formData={formData}
+            setShowSuccessDialog={setShowSuccessDialog}
             setFormData={setFormData}
             openSettings={openSettings}
             handleModal={() => setOpenSettings(false)}
