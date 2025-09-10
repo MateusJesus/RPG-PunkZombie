@@ -10,12 +10,10 @@ export default function CardContent({ conteudos, filter, onEdit, onDelete }) {
   return (
     <Box
       sx={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))",
-        gap: 2,
         mt: 3,
         alignItems: "start",
         width: "100%",
+        columnCount: 4,
       }}
     >
       {conteudos
@@ -27,102 +25,117 @@ export default function CardContent({ conteudos, filter, onEdit, onDelete }) {
             <Card
               key={index}
               sx={{
+                mb: 3,
                 width: "100%",
-                height: "auto", 
-                p: 2,
-                textAlign: "left",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
               }}
             >
-              {" "}
-              <Typography
-                sx={{
-                  wordBreak: "break-word",
-                  hyphens: "auto",
-                  width: "100%",
-                }}
-                variant="subtitle1"
-                fontWeight="700"
-                mt={1}
-              >
-                {c.nome.toUpperCase()}
-              </Typography>
               <Box>
                 {c.imagem && (
-                  <Box
-                    sx={{
-                      height: 150,
-                      background: "var(--color-1)",
-                    }}
-                  >
+                  <Box>
                     <img
                       src={c.imagem}
-                      alt={c.tipo}
+                      alt={c.descricao}
                       style={{
-                        width: "200px",
-                        height: 120,
-                        objectFit: "cover",
+                        width: "100%",
                       }}
                     />
                   </Box>
                 )}
               </Box>
-              <Typography
-                sx={{
-                  wordBreak: "break-word",
-                  hyphens: "auto",
-                  marginTop: "5px",
-                  width: "100%",
-                }}
-                fontWeight="100"
-                variant="subtitle1"
-                mt={1}
-              >
-                {c.tipo.toUpperCase()}
-              </Typography>
-              <Typography
-                sx={{
-                  wordBreak: "break-word",
-                  hyphens: "auto",
-                  width: "100%",
-                  marginTop: "5px",
-                }}
-                variant="body2"
-                color="text.secondary"
-              >
-                {c.descricao}
-              </Typography>
               <Box
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
                   width: "100%",
+                  height: "auto",
+                  pt: 1,
+                  pb: 2,
+                  pr: 2,
+                  pl: 2,
+                  textAlign: "left",
+                  display: "flex",
+                  flexDirection: "column",
                   justifyContent: "space-between",
-                  bottom: 0,
                 }}
               >
-                <Typography variant="caption" color="text.disabled">
-                  {c.username}
+                <Typography
+                  sx={{
+                    wordBreak: "break-word",
+                    hyphens: "auto",
+                    width: "100%",
+                  }}
+                  variant="subtitle1"
+                  fontWeight="700"
+                >
+                  {c.nome.toUpperCase()}
                 </Typography>
-
-                {ehAutor && (
-                  <Box
+                <Typography
+                  sx={{
+                    wordBreak: "break-word",
+                    hyphens: "auto",
+                    width: "100%",
+                    mt: 0.5,
+                  }}
+                  variant="body1"
+                  color="text.secondary"
+                >
+                  {c.descricao}
+                </Typography>
+                <Box
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                  }}
+                >
+                  <Typography
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
+                      wordBreak: "break-word",
+                      hyphens: "auto",
+                      width: "auto",
+                      padding: "5px",
+                      borderRadius: "5px",
+                      border: "1px solid var(--color-1)",
+                      lineHeight: "1",
                     }}
+                    fontSize="10px"
+                    fontWeight="100"
+                    mt={1}
                   >
-                    <IconButton size="small" onClick={() => onEdit(c)}>
-                      <Edit fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => onDelete(c)}>
-                      <Delete fontSize="small" />
-                    </IconButton>
-                  </Box>
-                )}
+                    {c.tipo.toUpperCase() === "OUTROS"
+                      ? c.outroTipo?.toUpperCase() + " - OUTRO"
+                      : c.tipo?.toUpperCase()}
+                  </Typography>
+                </Box>
+
+                <hr className="separation" />
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                    justifyContent: "space-between",
+                    bottom: 0,
+                  }}
+                >
+                  <Typography variant="caption" color="text.disabled">
+                    {c.username}
+                  </Typography>
+
+                  {ehAutor && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <IconButton size="small" onClick={() => onEdit(c)}>
+                        <Edit fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => onDelete(c)}>
+                        <Delete fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  )}
+                </Box>
               </Box>
             </Card>
           );

@@ -36,10 +36,13 @@ export default async function handler(req, res) {
     await runMiddleware(req, res, upload.single("file"));
 
     try {
+      
+      const folder = req.query.folder;
+
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.v2.uploader.upload_stream(
           {
-            folder: "rpg-fichas",
+            folder: folder,
             transformation: [{ width: 500, height: 500, crop: "limit" }],
           },
           (error, result) => {
@@ -61,13 +64,19 @@ export default async function handler(req, res) {
 
   if (req.method === "DELETE") {
     try {
-      const { public_id } = req.query;
+      const { public_id, folder } = req.query;
+
+      let targetId = public_id;
+
+      if (!targetId && folder) {
+        targetId = `${folder}/${public_id}`;
+      }
 
       if (!public_id) {
         return res.status(400).json({ error: "public_id é obrigatório" });
       }
 
-      const ate = await cloudinary.v2.uploader.destroy(public_id);
+      const ate = await cloudinary.v2.uploader.destroy(targetId);
 
       return res.status(200).json({ message: ate.result, imageId: public_id });
     } catch (error) {

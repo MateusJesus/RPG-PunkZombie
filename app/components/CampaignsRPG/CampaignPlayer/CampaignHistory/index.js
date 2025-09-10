@@ -43,21 +43,6 @@ export default function CampaignHistory({ formData, idCampaign }) {
         width: "100%",
       }}
     >
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        textTransform="uppercase"
-        color="text.secondary"
-      >
-        História da campanha
-      </Typography>
-
-      <Typography variant="body1" color="text.secondary" maxWidth={500}>
-        Aqui é onde o mestre pode escrever a história da campanha, detalhes do
-        mundo e tudo que ajuda os jogadores a se situarem.
-      </Typography>
-      <hr className="separation" />
-
       <Box
         sx={{
           display: "flex",

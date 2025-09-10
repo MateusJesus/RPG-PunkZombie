@@ -1,8 +1,8 @@
 "use client";
 
+import { useAuth } from "@/app/contexts/AuthContext";
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -11,6 +11,7 @@ import {
   Box,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
 
 export default function AddContentModal({
   open,
@@ -19,7 +20,10 @@ export default function AddContentModal({
   content,
   setContent,
   conteudoEditando,
+  setImageContent,
 }) {
+  const { setImageFicha } = useAuth();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setContent((prev) => ({
@@ -30,8 +34,13 @@ export default function AddContentModal({
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+
     if (file) {
-      setContent((prev) => ({ ...prev, imagem: file }));
+      setImageFicha(file);
+      setContent((prev) => ({
+        ...prev,
+        previewImage: URL.createObjectURL(file),
+      }));
     }
   };
 
@@ -41,17 +50,18 @@ export default function AddContentModal({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth>
+    <Dialog open={open} onClose={() => handleClose()} fullWidth>
       <h1 className="title_content">
-        {conteudoEditando ? "Editar" : "Adicioar"} conteúdo
+        {conteudoEditando ? "Editar" : "Adicionar"} conteúdo
       </h1>
+
       <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
           required
           label="Nome do conteúdo"
           name="nome"
-          value={content.nome}
-          onChange={handleChange}
+          defaultValue={content.nome}
+          onBlur={handleChange}
           inputProps={{ maxLength: 60 }}
         />
 
@@ -59,6 +69,22 @@ export default function AddContentModal({
           <Typography variant="body2" mb={0.5}>
             Imagem (opcional)
           </Typography>
+
+          {content.previewImage && (
+            <>
+              <img
+                src={content.previewImage}
+                alt="Preview"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "200px",
+                  borderRadius: "8px",
+                  marginBottom: "8px",
+                }}
+              />
+              <br></br>
+            </>
+          )}
 
           <label
             htmlFor="upload-image"
@@ -73,11 +99,9 @@ export default function AddContentModal({
               fontWeight: 500,
               transition: "background 0.3s",
             }}
-
             onMouseOver={(e) =>
               (e.currentTarget.style.backgroundColor = "var(--color-3)")
             }
-
             onMouseOut={(e) =>
               (e.currentTarget.style.backgroundColor = "var(--color-1)")
             }
@@ -88,9 +112,9 @@ export default function AddContentModal({
           <input
             id="upload-image"
             type="file"
+            style={{ display: "none" }}
             accept="image/*"
             onChange={handleImageChange}
-            style={{ display: "none" }}
           />
 
           {content.imagem && (
@@ -111,9 +135,9 @@ export default function AddContentModal({
           rows={4}
           label="Descrição do conteúdo"
           name="descricao"
-          value={content.descricao}
-          onChange={handleChange}
-          inputProps={{ maxLength: 60 }}
+          defaultValue={content.descricao}
+          onBlur={handleChange}
+          inputProps={{ maxLength: 100 }}
         />
 
         <TextField
@@ -135,8 +159,8 @@ export default function AddContentModal({
           <TextField
             label="Descreva o tipo"
             name="outroTipo"
-            value={content.outroTipo}
-            onChange={handleChange}
+            defaultValue={content.outroTipo}
+            onBlur={handleChange}
             inputProps={{ maxLength: 30 }}
           />
         )}

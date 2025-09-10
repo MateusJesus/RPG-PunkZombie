@@ -91,7 +91,7 @@ export default function InputFicha({
             name={name}
             maxLength={maxLength}
             defaultValue={value}
-            onBlur={onBlur} // 👈 chamando blur no textarea
+            onBlur={onBlur} 
           />
           {tema === "fungo" && <div style={getMaskStyle(bgTextarea.src)} />}
         </div>
@@ -106,7 +106,7 @@ export default function InputFicha({
             name={name}
             maxLength={maxLength}
             {...(!disabled && { defaultValue: value })}
-            onBlur={onBlur} // 👈 chamando blur no input normal
+            onBlur={onBlur}
           />
           {tema === "fungo" && <div style={getMaskStyle(bgInput.src)} />}
         </div>

@@ -102,7 +102,10 @@ export default function CampaignContent({ idCampaigns, formData }) {
   };
 
   const handleEditContent = (conteudo) => {
-    setConteudoEditando(conteudo);
+    setConteudoEditando((prev) => ({
+      ...conteudo,
+      previewImage: conteudo.imagem,
+    }));
     setOpenModal(true);
   };
 
@@ -125,6 +128,7 @@ export default function CampaignContent({ idCampaigns, formData }) {
   useEffect(() => {
     if (conteudoEditando) {
       setContent(conteudoEditando);
+      console.log(conteudoEditando);
     } else {
       setContent({
         nome: "",
@@ -144,6 +148,7 @@ export default function CampaignContent({ idCampaigns, formData }) {
       descricao: "",
       outroTipo: "",
       imagem: null,
+      previewImage: null,
     });
     setOpenModal(false);
   };

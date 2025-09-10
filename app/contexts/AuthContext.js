@@ -81,11 +81,11 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const uploadImagemFicha = async (imagemFile) => {
+  const uploadImagemFicha = async (imagemFile, folder) => {
     const formData = new FormData();
     formData.append("file", imagemFile);
 
-    const res = await fetch("/api/uploadImgFicha", {
+    const res = await fetch(`/api/uploadImgFicha?folder=${folder}`, {
       method: "POST",
       body: formData,
     });
@@ -94,64 +94,54 @@ export function AuthProvider({ children }) {
       throw new Error(`Falha no upload da imagem: ${res.status}`);
     }
 
-    return await res.json(); // Retorna { url, public_id }
+    return await res.json();
   };
 
-  const processarImagemFicha = async (ficha, imageFicha) => {
+  const processarImagemFicha = async (ficha, imageFicha, folder) => {
     try {
-      let fichaAtualizada = {
-        ...ficha,
-        imagem: "",
-        imagemId: "",
-      };
-
-      // Se já existe imagem antiga, deleta antes
+      let fichaAtualizada = { ...ficha };
 
       if ((ficha.imagemId && imageFicha) || ficha.imagem === "delete") {
         try {
-          const resDelete = await fetch(
-            `/api/uploadImgFicha?public_id=${ficha.imagemId}`,
-            { method: "DELETE" }
-          );
-          const deleteData = await resDelete.json();
-          console.log("Imagem antiga deletada:", deleteData);
+          if (ficha.imagemId) {
+            const resDelete = await fetch(
+              `/api/uploadImgFicha?public_id=${ficha.imagemId}`,
+              { method: "DELETE" }
+            );
+            const deleteData = await resDelete.json();
+            console.log("Imagem antiga deletada:", deleteData);
+          }
         } catch (err) {
           console.error("Erro ao deletar imagem antiga:", err);
         }
 
         fichaAtualizada = {
-          ...ficha,
+          ...fichaAtualizada,
           imagem: "",
           imagemId: "",
         };
-
-        // Limpa estado local
       }
 
+      // Nenhuma nova imagem → só retorna ficha (com delete aplicado se for o caso)
       if (!imageFicha) {
-        setImageFicha(null);
-        return {
-          ...ficha,
-          imagem: ficha.imagem === "delete" ? "" : ficha.imagem,
-          imagemId: ficha.imagem === "delete" ? "" : ficha.imagemId,
-        };
-      } else {
-        // Faz upload da nova imagem
-        const uploadResult = await uploadImagemFicha(imageFicha);
-        console.log("Nova imagem enviada com sucesso:", uploadResult);
-
-        // Atualiza ficha com nova imagem
-        fichaAtualizada = {
-          ...ficha,
-          imagem: uploadResult.url,
-          imagemId: uploadResult.public_id,
-        };
-
-        // Limpa estado local
-        setImageFicha(null);
+        if (setImageFicha) setImageFicha(null);
 
         return fichaAtualizada;
       }
+
+      // Faz upload da nova imagem
+      const uploadResult = await uploadImagemFicha(imageFicha, folder);
+      console.log("Nova imagem enviada com sucesso:", uploadResult);
+
+      fichaAtualizada = {
+        ...fichaAtualizada,
+        imagem: uploadResult.url,
+        imagemId: uploadResult.public_id,
+      };
+
+      if (setImageFicha) setImageFicha(null);
+
+      return fichaAtualizada;
     } catch (err) {
       console.error("Erro ao processar imagem:", err);
       return ficha; // Se falhar, retorna ficha original
@@ -170,8 +160,11 @@ export function AuthProvider({ children }) {
         data_hora: new Date(),
       };
 
-      // Processa a imagem antes de salvar
-      fichaComUsuario = await processarImagemFicha(fichaComUsuario, imageFicha);
+      fichaComUsuario = await processarImagemFicha(
+        fichaComUsuario,
+        imageFicha,
+        "punkzombieFicha"
+      );
 
       const fichasRef = collection(db, "fichas");
       const docRef = await addDoc(fichasRef, fichaComUsuario);
@@ -194,7 +187,11 @@ export function AuthProvider({ children }) {
       };
 
       // Processa a imagem antes de atualizar
-      fichaComUsuario = await processarImagemFicha(fichaComUsuario, imageFicha);
+      fichaComUsuario = await processarImagemFicha(
+        fichaComUsuario,
+        imageFicha,
+        "punkzombieFicha"
+      );
 
       const fichaRef = doc(db, "fichas", idFicha);
       await updateDoc(fichaRef, fichaComUsuario);
@@ -235,7 +232,8 @@ export function AuthProvider({ children }) {
 
       fichaComPermissao = await processarImagemFicha(
         fichaComPermissao,
-        imageFicha
+        imageFicha,
+        "punkzombieFicha"
       );
 
       const campanhaRef = doc(
@@ -277,7 +275,13 @@ export function AuthProvider({ children }) {
       }
 
       if (ficha.imagem) {
-        await processarImagemFicha(ficha, imageFicha);
+        await processarImagemFicha(
+          {
+            ...ficha,
+            imagem: "delete",
+          },
+          imageFicha
+        );
       }
 
       await deleteDoc(fichaRef);
@@ -537,6 +541,26 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const getConteudosCampanha = async (campanhaId) => {
+    if (!campanhaId) throw new Error("ID da campanha inválido.");
+
+    const campanhaRef = doc(db, "campanhas", campanhaId);
+    const campanhaSnap = await getDoc(campanhaRef);
+
+    if (!campanhaSnap.exists()) throw new Error("Campanha não encontrada.");
+
+    const campanha = campanhaSnap.data();
+
+    const todosConteudos = campanha.contents || [];
+
+    const visiveis = todosConteudos;
+
+    return visiveis.sort(
+      (a, b) =>
+        new Date(b.criadoEm?.seconds || 0) - new Date(a.criadoEm?.seconds || 0)
+    );
+  };
+
   const adicionarConteudoCampanha = async (campanhaId, conteudo) => {
     if (!user) throw new Error("Usuário não autenticado.");
 
@@ -569,12 +593,18 @@ export function AuthProvider({ children }) {
       }
     }
 
-    const novoConteudo = {
+    let novoConteudo = {
       ...conteudo,
       addPor: user.uid,
       username: isMestre ? user.displayName + " (Mestre)" : user.displayName,
       id: uuidv4(),
     };
+
+    novoConteudo = await processarImagemFicha(
+      novoConteudo,
+      imageFicha,
+      "contentCampaign"
+    );
 
     await updateDoc(campanhaRef, {
       contents: arrayUnion(novoConteudo),
@@ -583,52 +613,62 @@ export function AuthProvider({ children }) {
     return { sucesso: true, mensagem: "Conteúdo adicionado com sucesso!" };
   };
 
-  const getConteudosCampanha = async (campanhaId) => {
-    if (!campanhaId) throw new Error("ID da campanha inválido.");
-
-    const campanhaRef = doc(db, "campanhas", campanhaId);
-    const campanhaSnap = await getDoc(campanhaRef);
-
-    if (!campanhaSnap.exists()) throw new Error("Campanha não encontrada.");
-
-    const campanha = campanhaSnap.data();
-
-    const todosConteudos = campanha.contents || [];
-
-    const visiveis = todosConteudos;
-
-    return visiveis.sort(
-      (a, b) =>
-        new Date(b.criadoEm?.seconds || 0) - new Date(a.criadoEm?.seconds || 0)
-    );
-  };
-
   const editarConteudoCampanha = async (idCampanha, idConteudo, novosDados) => {
-    const campanhaRef = doc(db, "campanhas", idCampanha);
-    const campanhaSnap = await getDoc(campanhaRef);
-    if (!campanhaSnap.exists()) throw new Error("Campanha não encontrada");
+    try {
+      const campanhaRef = doc(db, "campanhas", idCampanha);
+      const campanhaSnap = await getDoc(campanhaRef);
 
-    const dados = campanhaSnap.data();
-    const contents = dados.contents || [];
+      if (!campanhaSnap.exists()) throw new Error("Campanha não encontrada");
 
-    const atualizados = contents.map((c) =>
-      c.id === idConteudo ? { ...c, ...novosDados } : c
-    );
+      const dados = campanhaSnap.data();
+      const contents = dados.contents || [];
 
-    await updateDoc(campanhaRef, { contents: atualizados });
+      const novosDadosProcessados = await processarImagemFicha(
+        novosDados,
+        imageFicha,
+        "contentCampaign"
+      );
+
+      const atualizados = contents.map((c) =>
+        c.id === idConteudo ? { ...c, ...novosDadosProcessados } : c
+      );
+
+      await updateDoc(campanhaRef, { contents: atualizados });
+      console.log("Conteúdo atualizado com sucesso!");
+    } catch (err) {
+      console.error("Erro ao editar conteúdo da campanha:", err);
+      throw err;
+    }
   };
 
   const excluirConteudoCampanha = async (idCampanha, idConteudo) => {
-    const campanhaRef = doc(db, "campanhas", idCampanha);
-    const campanhaSnap = await getDoc(campanhaRef);
-    if (!campanhaSnap.exists()) throw new Error("Campanha não encontrada");
+    try {
+      const campanhaRef = doc(db, "campanhas", idCampanha);
+      const campanhaSnap = await getDoc(campanhaRef);
 
-    const dados = campanhaSnap.data();
-    const contents = dados.contents || [];
+      if (!campanhaSnap.exists()) throw new Error("Campanha não encontrada");
 
-    const atualizados = contents.filter((c) => c.id !== idConteudo);
+      const dados = campanhaSnap.data();
+      const contents = dados.contents || [];
 
-    await updateDoc(campanhaRef, { contents: atualizados });
+      const conteudo = contents.find((c) => c.id === idConteudo);
+      
+      if (!conteudo) throw new Error("Conteúdo não encontrado");
+
+      await processarImagemFicha(
+        { ...conteudo, imagem: "delete" },
+        null,
+        "contentCampaign"
+      );
+
+      const atualizados = contents.filter((c) => c.id !== idConteudo);
+
+      await updateDoc(campanhaRef, { contents: atualizados });
+      console.log("Conteúdo excluído com sucesso!");
+    } catch (err) {
+      console.error("Erro ao excluir conteúdo da campanha:", err);
+      throw err;
+    }
   };
 
   const adicionarFichaCampanha = async (campanhaId, fichaId) => {
