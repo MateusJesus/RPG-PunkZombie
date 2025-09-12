@@ -37,6 +37,7 @@ export default function CampaignContent({ idCampaigns, formData }) {
     getConteudosCampanha,
     editarConteudoCampanha,
     excluirConteudoCampanha,
+    setImageFicha,
     user,
   } = useAuth();
 
@@ -137,11 +138,13 @@ export default function CampaignContent({ idCampaigns, formData }) {
         outroTipo: "",
         imagem: null,
       });
+      setImageFicha(null);
     }
   }, [conteudoEditando]);
 
   const handleClose = () => {
     setConteudoEditando(null);
+    setImageFicha(null);
     setContent({
       nome: "",
       tipo: "",
