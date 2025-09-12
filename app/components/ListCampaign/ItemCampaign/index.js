@@ -19,7 +19,12 @@ export default function ItemCampaign({ data }) {
     if (!user) return;
 
     const fetchLikeData = async () => {
-      const result = await toggleLikeCampanha("campanhas", data.id, user, "buscar");
+      const result = await toggleLikeCampanha(
+        "campanhas",
+        data.id,
+        user,
+        "buscar"
+      );
       setLiked(result.liked);
       setLikeCount(result.likes);
     };
@@ -31,13 +36,20 @@ export default function ItemCampaign({ data }) {
     if (!user) return;
 
     try {
-      const result = await toggleLikeCampanha("campanhas", data.id, user, "like");
+      const result = await toggleLikeCampanha(
+        "campanhas",
+        data.id,
+        user,
+        "like"
+      );
       setLiked(result.liked);
       setLikeCount(result.likes);
     } catch (error) {
       console.error("Erro ao curtir campanha:", error);
     }
   };
+
+  console.log(data);
 
   return (
     <Box
@@ -93,7 +105,9 @@ export default function ItemCampaign({ data }) {
               minWidth: "165px",
               background: "var(--color-1)",
             }}
-          ></Box>
+          >
+            <img src={data.imagem} />
+          </Box>
 
           <CardContent
             sx={{

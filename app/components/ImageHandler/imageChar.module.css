@@ -1,0 +1,130 @@
+.imagem_perso {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.imagem_perso img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.imagem_perso input {
+  display: none;
+}
+
+.imagem_perso .icon {
+  font-size: 30px;
+}
+
+.imagem_perso .custom_file_upload {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 400;
+  overflow: hidden;
+  inset: 0;
+  border: 2px dashed var(--text-color);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background ease-in-out 0.5s;
+}
+
+.custom_file_upload:hover {
+  border: 2px dashed var(--text-color);
+  background-color: rgba(129, 129, 129, 0.2);
+}
+
+.degrade {
+  font-weight: 600;
+  position: absolute;
+  transform: translateY(0.5em);
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  padding: 0.3em 10em 0.3em 1em;
+  justify-content: center;
+  color: var(--white);
+  background: rgb(255, 0, 0);
+  background: -moz-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.5) 0%,
+    rgba(255, 0, 0, 0.5) 50%,
+    rgba(255, 0, 0, 0) 100%
+  );
+  background: -webkit-linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.5) 0%,
+    rgba(255, 0, 0, 0.5) 50%,
+    rgba(255, 0, 0, 0) 100%
+  );
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.5) 0%,
+    rgba(255, 0, 0, 0.5) 50%,
+    rgba(255, 0, 0, 0) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ff0000",endColorstr="#ff0000",GradientType=1);
+  animation: fade 2s infinite;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1050px) {
+  .imagem_perso {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 100%;
+    max-width: 100%;
+  }
+
+  .imagem_perso img {
+    max-width: 340.406px;
+    max-height: 616.031px;
+  }
+
+  .personagem input:focus {
+    outline: none;
+  }
+
+  .personagem input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  .imagem_perso .icon {
+    font-size: 30px;
+  }
+
+  .custom_file_upload:hover {
+    border: 2px dashed var(--color-4);
+    background-color: rgba(129, 129, 129, 0.2);
+  }
+
+  .content_perso {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    margin: 0.5em;
+  }
+}

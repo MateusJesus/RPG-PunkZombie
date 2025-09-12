@@ -14,6 +14,7 @@ import ImageCharacter from "./ImageCharacter";
 import Attributes from "./Attributes";
 import Pericias from "./Pericias";
 import TitleContent from "../TitleContent";
+import ImageHandler from "@/app/components/ImageHandler";
 
 export default function Character({
   user,
@@ -262,7 +263,11 @@ export default function Character({
           </ContentFicha>
 
           <ContentFicha formData={formData}>
-            <ImageCharacter formData={formData} setFormData={setFormData} />
+            <ImageHandler
+              dados={formData}
+              setDados={setFormData}
+              aspectRatio={{ y: 616.031, x: 340.406 }}
+            />
           </ContentFicha>
         </div>
         <div className={classStyled.atri_peri}>

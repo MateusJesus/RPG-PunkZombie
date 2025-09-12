@@ -41,14 +41,12 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      if (authUser?.uid !== user?.uid) {
-        setUser(authUser);
-        setLoadingPage(false);
-      }
+      setUser(authUser || null);
+      setLoadingPage(false);
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     setImageFicha(null);
@@ -153,6 +151,8 @@ export function AuthProvider({ children }) {
     try {
       if (!user) throw new Error("Usuário não autenticado.");
 
+      const fichasRef = collection(db, "fichas");
+
       let fichaComUsuario = {
         ...ficha,
         uid: user.uid,
@@ -160,14 +160,19 @@ export function AuthProvider({ children }) {
         data_hora: new Date(),
       };
 
+      // Cria o documento inicial (sem imagem)
+      const docRef = await addDoc(fichasRef, fichaComUsuario);
+
       fichaComUsuario = await processarImagemFicha(
         fichaComUsuario,
         imageFicha,
-        "punkzombieFicha"
+        `punkzombie/fichas/${fichaComUsuario.usuario}/${docRef.id}`
       );
 
-      const fichasRef = collection(db, "fichas");
-      const docRef = await addDoc(fichasRef, fichaComUsuario);
+      // Atualiza o mesmo documento com a imagem
+      await setDoc(doc(db, "fichas", docRef.id), fichaComUsuario, {
+        merge: true,
+      });
 
       return docRef.id;
     } catch (error) {
@@ -190,7 +195,7 @@ export function AuthProvider({ children }) {
       fichaComUsuario = await processarImagemFicha(
         fichaComUsuario,
         imageFicha,
-        "punkzombieFicha"
+        `punkzombie/fichas/${fichaComUsuario.usuario}/${idFicha}`
       );
 
       const fichaRef = doc(db, "fichas", idFicha);
@@ -233,7 +238,7 @@ export function AuthProvider({ children }) {
       fichaComPermissao = await processarImagemFicha(
         fichaComPermissao,
         imageFicha,
-        "punkzombieFicha"
+        `punkzombie/fichas/${fichaComPermissao.usuario}/${idFicha}`
       );
 
       const campanhaRef = doc(
@@ -390,6 +395,33 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const editarCampanha = async (idCampanha, dados) => {
+    try {
+      let campaign = {
+        ...dados,
+        uid: user.uid,
+        usuario: user.displayName,
+      };
+
+      campaign = await processarImagemFicha(
+        campaign,
+        imageFicha,
+        `punkzombie/campaigns/${campaign.uid}/${idCampanha}`
+      );
+
+      const docRef = doc(db, "campanhas", idCampanha);
+      await updateDoc(docRef, {
+        ...campaign,
+        atualizadoEm: new Date(),
+      });
+
+      console.log("Campanha atualizada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao editar campanha:", error);
+      throw error;
+    }
+  };
+
   const abrirCampanha = async (id) => {
     try {
       const docRef = doc(db, "campanhas", id);
@@ -405,20 +437,6 @@ export function AuthProvider({ children }) {
       }
     } catch (error) {
       console.error("Erro ao abrir campanha:", error);
-      throw error;
-    }
-  };
-
-  const editarCampanha = async (id, dados) => {
-    try {
-      const docRef = doc(db, "campanhas", id);
-      await updateDoc(docRef, {
-        ...dados,
-        atualizadoEm: new Date(),
-      });
-      console.log("Campanha atualizada com sucesso!");
-    } catch (error) {
-      console.error("Erro ao editar campanha:", error);
       throw error;
     }
   };
@@ -600,10 +618,14 @@ export function AuthProvider({ children }) {
       id: uuidv4(),
     };
 
+    const usernameMestre = campanha.jogadores.filter(
+      (a) => a.papel === "mestre"
+    )[0].username;
+
     novoConteudo = await processarImagemFicha(
       novoConteudo,
       imageFicha,
-      "contentCampaign"
+      `punkzombie/campaigns/${usernameMestre}/${campanhaId}`
     );
 
     await updateDoc(campanhaRef, {
@@ -623,10 +645,14 @@ export function AuthProvider({ children }) {
       const dados = campanhaSnap.data();
       const contents = dados.contents || [];
 
+      const usernameMestre = dados.jogadores.filter(
+        (a) => a.papel === "mestre"
+      )[0].username;
+
       const novosDadosProcessados = await processarImagemFicha(
         novosDados,
         imageFicha,
-        "contentCampaign"
+        `punkzombie/campaigns/${usernameMestre}/${idCampanha}/content_${user.displayName}`
       );
 
       const atualizados = contents.map((c) =>
@@ -652,7 +678,7 @@ export function AuthProvider({ children }) {
       const contents = dados.contents || [];
 
       const conteudo = contents.find((c) => c.id === idConteudo);
-      
+
       if (!conteudo) throw new Error("Conteúdo não encontrado");
 
       await processarImagemFicha(

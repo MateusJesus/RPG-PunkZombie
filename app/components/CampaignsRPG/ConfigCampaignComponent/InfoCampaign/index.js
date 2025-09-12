@@ -9,9 +9,8 @@ import {
   RadioGroup,
   Tooltip,
 } from "@mui/material";
-import { FaFileImage } from "react-icons/fa";
-import Link from "next/link";
 import { useAuth } from "@/app/contexts/AuthContext";
+import ImageHandler from "@/app/components/ImageHandler";
 
 export default function InfoCampaign({
   idCampanha,
@@ -20,7 +19,7 @@ export default function InfoCampaign({
   setFormData,
 }) {
   const { excluirCampanha } = useAuth();
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -37,16 +36,6 @@ export default function InfoCampaign({
       setFormData((prev) => ({
         ...prev,
         [name]: value,
-      }));
-    }
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        imagem: file,
       }));
     }
   };
@@ -252,27 +241,11 @@ export default function InfoCampaign({
             <div className="box">
               <h2 className="title_content">Imagem da campanha</h2>
               <div className={classStyled.content}>
-                <div className={classStyled.imagem_perso + " box"}>
-                  <label
-                    htmlFor="inputImgPerso"
-                    className={classStyled.custom_file_upload}
-                  >
-                    <span>
-                      <FaFileImage className={classStyled.icon} />
-                      <br />
-                      Clique ou arraste e
-                      <br />
-                      solte sua imagem aqui.
-                    </span>
-                    <input
-                      id="inputImgPerso"
-                      type="file"
-                      name="imagem"
-                      accept=".jpg, .jpeg, .png"
-                      onChange={handleImageChange}
-                    />
-                  </label>
-                </div>
+                <ImageHandler
+                  aspectRatio={{ x: 616.031, y: 340.406 }}
+                  dados={formData}
+                  setDados={setFormData}
+                />
               </div>
             </div>
             <div className="box">

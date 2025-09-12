@@ -129,7 +129,6 @@ export default function CampaignContent({ idCampaigns, formData }) {
   useEffect(() => {
     if (conteudoEditando) {
       setContent(conteudoEditando);
-      console.log(conteudoEditando);
     } else {
       setContent({
         nome: "",
