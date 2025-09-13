@@ -122,49 +122,51 @@ export default function ItemFicha({ data }) {
               </Typography>
             </Box>
           </CardContent>
-          <Box
-            sx={{
-              position: "relative",
-              minHeight: "100%",
-              minWidth: "165px",
-              background: "var(--color-1)",
-            }}
-          >
-            <img
-              src={
-                data.imagem ||
-                "https://cdn.creazilla.com/silhouettes/3473428/skeleton-silhouette-000000-md.png"
-              }
-              style={{ width: "165px" }}
-            />
-            {data.status.status_niv !== "" && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "0",
-                  right: "0",
-                }}
-              >
+          {data.imagem && (
+            <Box
+              sx={{
+                position: "relative",
+                minHeight: "100%",
+                minWidth: "165px",
+                background: "var(--color-1)",
+              }}
+            >
+              <img
+                src={
+                  data.imagem ||
+                  "https://cdn.creazilla.com/silhouettes/3473428/skeleton-silhouette-000000-md.png"
+                }
+                style={{ width: "165px" }}
+              />
+              {data.status.status_niv !== "" && (
                 <Box
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    position: "absolute",
+                    top: "0",
+                    right: "0",
                   }}
                 >
-                  <span
-                    style={{
-                      position: "absolute",
-                      color: "var(--color-2)",
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    {data.status.status_niv}
-                  </span>
-                  <TiStarburst style={{ fontSize: "35px" }} />
+                    <span
+                      style={{
+                        position: "absolute",
+                        color: "var(--color-2)",
+                      }}
+                    >
+                      {data.status.status_niv}
+                    </span>
+                    <TiStarburst style={{ fontSize: "35px" }} />
+                  </Box>
                 </Box>
-              </Box>
-            )}
-          </Box>
+              )}
+            </Box>
+          )}
         </Card>
       </Link>
       {user && (

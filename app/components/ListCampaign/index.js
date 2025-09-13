@@ -8,13 +8,11 @@ export default function ListCampaign({ datas }) {
       <ul
         style={{
           marginTop: 20,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
           width: "100%",
           gap: "20px",
           listStyle: "none",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
         }}
       >
         {datas.length > 0 ? (

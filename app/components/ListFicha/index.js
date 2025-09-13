@@ -8,19 +8,20 @@ export default function ListFicha({ datas }) {
       <ul
         style={{
           marginTop: 20,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-          gap: "40px",
           listStyle: "none",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
         }}
       >
         {datas.length > 0 ? (
           datas.map((data, index) => {
             return (
-              <li key={data.id + index}>
+              <li
+                style={{
+                  margin: "0 0 20px  0",
+                }}
+                key={data.id + index}
+              >
                 <ItemFicha data={data} />
               </li>
             );

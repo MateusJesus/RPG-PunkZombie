@@ -515,16 +515,37 @@ export function AuthProvider({ children }) {
 
       const dados = campanhaSnap.data();
 
+      // 1️⃣ Filtra conteúdos do jogador
+      const conteudosDoJogador =
+        dados.contents?.filter((c) => c.addPor === uidJogador) || [];
+
+      // 2️⃣ Exclui conteúdos e imagens
+      for (const c of conteudosDoJogador) {
+        try {
+          await excluirConteudoCampanha(idCampanha, c.id);
+        } catch (err) {
+          console.error(`Erro ao excluir conteúdo ${c.id}:`, err);
+        }
+      }
+
+      // 3️⃣ Atualiza lista de jogadores
       const jogadoresAtualizados =
         dados.jogadores?.filter((j) => j.uid !== uidJogador) || [];
 
+      // 4️⃣ Atualiza Firestore
       await updateDoc(campanhaRef, {
         jogadores: jogadoresAtualizados,
+        jogadoresUids: jogadoresAtualizados.map((j) => j.uid),
       });
 
-      console.log("Jogador removido da campanha com sucesso!");
+      console.log(
+        `Jogador ${uidJogador} removido da campanha ${idCampanha} com sucesso!`
+      );
     } catch (error) {
-      console.error("Erro ao sair da campanha:", error);
+      console.error(
+        `Erro ao remover jogador ${uidJogador} da campanha ${idCampanha}:`,
+        error
+      );
       throw error;
     }
   };
@@ -552,10 +573,7 @@ export function AuthProvider({ children }) {
     }
 
     if (acao === "remover") {
-      await updateDoc(campanhaRef, {
-        jogadores: arrayRemove(jogadorObj),
-        jogadoresUids: arrayRemove(jogadorObj.uid),
-      });
+      await sairDaCampanha(idCampanha, jogadorObj.uid);
     }
   };
 
@@ -681,15 +699,15 @@ export function AuthProvider({ children }) {
 
       if (!conteudo) throw new Error("Conteúdo não encontrado");
 
+      const atualizados = contents.filter((c) => c.id !== idConteudo);
+
+      await updateDoc(campanhaRef, { contents: atualizados });
+
       await processarImagemFicha(
         { ...conteudo, imagem: "delete" },
         null,
         "contentCampaign"
       );
-
-      const atualizados = contents.filter((c) => c.id !== idConteudo);
-
-      await updateDoc(campanhaRef, { contents: atualizados });
       console.log("Conteúdo excluído com sucesso!");
     } catch (err) {
       console.error("Erro ao excluir conteúdo da campanha:", err);

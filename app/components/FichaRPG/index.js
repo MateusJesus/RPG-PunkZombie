@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Character from "./ComponentsFicha/Character";
+import Character from "./Character";
 import {
   Snackbar,
   Dialog,

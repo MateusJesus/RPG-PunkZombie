@@ -34,7 +34,7 @@ export default function JogadoresLista({
   const handleAcao = async (jogadorObj, acao) => {
     try {
       await gerenciarPedidoEntrada(idCampaigns, jogadorObj, acao);
-      window.location.reload();
+      //window.location.reload();
     } catch (err) {
       console.error("Erro ao processar pedido:", err);
     }
@@ -42,9 +42,11 @@ export default function JogadoresLista({
 
   const jogadoresList = jogadores ?? pedidosEntrada ?? [];
 
-  const mestre = jogadoresList.find(j => j.uid === formData?.mestreId);
+  const mestre = jogadoresList.find((j) => j.uid === formData?.mestreId);
 
-  const outrosJogadores = jogadoresList.filter(j => j.uid !== formData?.mestreId);
+  const outrosJogadores = jogadoresList.filter(
+    (j) => j.uid !== formData?.mestreId
+  );
 
   return (
     <>
@@ -110,19 +112,20 @@ export default function JogadoresLista({
                     </Button>
                   </TableCell>
                 )
+              ) : jogadorId.uid === user.uid ? (
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    color="warning"
+                    onClick={handleSair}
+                  >
+                    Sair
+                  </Button>
+                </TableCell>
               ) : (
-                jogadorId.uid === user.uid && (
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      color="warning"
-                      onClick={handleSair}
-                    >
-                      Sair
-                    </Button>
-                  </TableCell>
-                )
+                <TableCell>
+                </TableCell>
               )}
             </TableRow>
           ))}

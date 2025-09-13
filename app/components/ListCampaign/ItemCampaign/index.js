@@ -75,7 +75,7 @@ export default function ItemCampaign({ data }) {
               width: "100%",
               display: "block",
               overflow: "hidden",
-              padding: "1em",
+              padding: "1em 1em 0em 1em",
               margin: "0",
             }}
           >
@@ -96,18 +96,20 @@ export default function ItemCampaign({ data }) {
               <AccountCircle />
               {data.username}
             </Typography>
+
+            {!data.imagem && <hr className="separation" />}
           </Box>
 
-          <Box
-            sx={{
-              position: "relative",
-              minHeight: "250px",
-              minWidth: "165px",
-              background: "var(--color-1)",
-            }}
-          >
-            <img src={data.imagem} />
-          </Box>
+          {data.imagem && (
+            <Box>
+              <img
+                style={{
+                  width: "100%",
+                }}
+                src={data.imagem}
+              />
+            </Box>
+          )}
 
           <CardContent
             sx={{
@@ -120,7 +122,7 @@ export default function ItemCampaign({ data }) {
               flexDirection: "column",
               justifyContent: "space-between",
               gap: "10px",
-              padding: ".5em 1em ",
+              padding: "0em 1em 1em 1em",
             }}
           >
             <Box
