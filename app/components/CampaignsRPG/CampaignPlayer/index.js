@@ -51,10 +51,11 @@ export default function CampaignPlayer({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  console.log("Form Data em CampaignPlayer:", isMobile);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
 
   const tabs = [];
   isOwner &&
@@ -69,10 +70,12 @@ export default function CampaignPlayer({
     <>
       <Box
         sx={{
-          display: "flex",
           justifyContent: "space-between",
           borderBottom: 1,
           borderColor: "divider",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
         }}
       >
         <Tabs
@@ -86,7 +89,7 @@ export default function CampaignPlayer({
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            width: isMobile ? "100%" : "auto",
+            width: "100%",
             ".MuiTab-root": {
               textTransform: "none",
               fontWeight: 500,
@@ -99,6 +102,7 @@ export default function CampaignPlayer({
             <Tab key={index} label={tab.label} {...a11yProps(index)} />
           ))}
         </Tabs>
+        <hr />
         <Tab
           onClick={atualizarCampanha}
           key={"reload"}

@@ -48,9 +48,7 @@ export default function ItemCampaign({ data }) {
       console.error("Erro ao curtir campanha:", error);
     }
   };
-
-  console.log(data);
-
+  
   return (
     <Box
       sx={{

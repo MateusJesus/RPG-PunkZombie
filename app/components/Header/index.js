@@ -16,14 +16,21 @@ import {
   Tabs,
   Tab,
   Box,
+  useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CampaignIcon from "@mui/icons-material/Campaign";
-import { AccountCircle, ExitToApp, Home } from "@mui/icons-material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {
+  AccountCircle,
+  ExitToApp,
+  Group,
+  GroupAdd,
+  Home,
+  NoteAdd,
+} from "@mui/icons-material";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 export default function Header() {
@@ -46,27 +53,24 @@ export default function Header() {
     }
   };
 
+  // detecta se a tela é pequena (mobile)
+  const isMobile = useMediaQuery("(max-width:600px)");
+
   return (
     <Box>
-      <AppBar
-        position="fixed"
-        sx={{
-          zIndex: 10,
-        }}
-      >
+      <AppBar position="fixed" sx={{ zIndex: 10 }}>
         <Toolbar
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            height: 64,
+            padding: isMobile ? "0 8px" : "0 16px",
+            gap: isMobile ? 1 : 2,
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
+          {" "}
+          {isMobile && (
             <IconButton
               color="inherit"
               edge="start"
@@ -75,44 +79,47 @@ export default function Header() {
             >
               <MenuIcon />
             </IconButton>
-            <Typography>
-              <Image
-                src="/assets/letreiro_punkzombie.png"
-                alt="Letreiro PunkZombie"
-                width={1500}
-                height={400}
-                style={{ width: "auto", height: "50px", marginLeft: "15px" }}
-                priority
-              />
-            </Typography>
-          </Box>
-          <Tabs
-            value={getTabValue()}
-            aria-label="Navigation Tabs"
-            textColor="inherit"
-            indicatorColor="secondary"
-          >
-            <Tab
-              sx={{ height: 64 }}
-              component={Link}
-              href="/"
-              value={0}
-              label="Fichas"
-            />
-            {/* <Tab
-              component={Link}
-              href="/favorites"
-              value={1}
-              sx={{ height: 70 }}
-              label="Favoritas"
-            /> */}
-            <Tab
-              component={Link}
-              href="/campaigns"
-              value={2}
-              label="Campanhas"
-            />
-          </Tabs>
+          )}
+          {!isMobile && (
+            <>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography>
+                  <Image
+                    src="/assets/letreiro_punkzombie.png"
+                    alt="Letreiro PunkZombie"
+                    width={1500}
+                    height={400}
+                    style={{
+                      width: "auto",
+                      height: "50px",
+                      marginLeft: "15px",
+                    }}
+                    priority
+                  />
+                </Typography>
+              </Box>
+              <Tabs
+                value={getTabValue()}
+                aria-label="Navigation Tabs"
+                textColor="inherit"
+                indicatorColor="secondary"
+              >
+                <Tab
+                  sx={{ height: 64 }}
+                  component={Link}
+                  href="/"
+                  value={0}
+                  label="Fichas"
+                />
+                <Tab
+                  component={Link}
+                  href="/campaigns"
+                  value={2}
+                  label="Campanhas"
+                />
+              </Tabs>
+            </>
+          )}
           <Box>
             {!user ? (
               <>
@@ -145,7 +152,9 @@ export default function Header() {
           </Box>
         </Toolbar>
       </AppBar>
+
       <Box sx={{ height: 64 }} />
+
       <Drawer anchor="left" open={open} onClose={toggleDrawer(false)}>
         <List
           sx={{
@@ -155,29 +164,41 @@ export default function Header() {
             flexDirection: "column",
           }}
         >
-          <Link href={"/ficha"}>
+          <Link href={"/"}>
             <ListItem disablePadding>
               <ListItemButton>
                 <Home sx={{ marginRight: 1 }} />
-                <ListItemText primary="Criar ficha" />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <FavoriteIcon sx={{ marginRight: 1 }} />
-              <ListItemText primary="Minhas Favoritas" />
-            </ListItemButton>
-          </ListItem>
-          <Link href={"/config-campaign"}>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <CampaignIcon sx={{ marginRight: 1 }} />
-                <ListItemText primary="Criar Campanha" />
+                <ListItemText primary="Fichas" />
               </ListItemButton>
             </ListItem>
           </Link>
 
+          <Link href={"/campaigns"}>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <Group sx={{ marginRight: 1 }} />
+                <ListItemText primary="Campanhas" />
+              </ListItemButton>
+            </ListItem>
+          </Link>
+
+          <Link href={"/ficha"}>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <NoteAdd sx={{ marginRight: 1 }} />
+                <ListItemText primary="Criar ficha" />
+              </ListItemButton>
+            </ListItem>
+          </Link>
+
+          <Link href={"/config-campaign"}>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <GroupAdd sx={{ marginRight: 1 }} />
+                <ListItemText primary="Criar Campanha" />
+              </ListItemButton>
+            </ListItem>
+          </Link>
           {user && (
             <ListItem disablePadding sx={{ mt: "auto" }}>
               <ListItemButton onClick={logout}>
