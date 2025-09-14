@@ -70,7 +70,7 @@ export default function JogadoresLista({
         >
           Lista de {pedidosEntrada ? "Pedidos" : "Jogadores"}
         </Typography>
-        <Typography variant="body1" color="text.secondary" width={500}>
+        <Typography variant="body1" color="text.secondary">
           {pedidosEntrada
             ? "Aqui estão os jogadores que solicitaram entrada na campanha. Você pode aceitar ou recusar seus pedidos."
             : "Aqui estão os jogadores que participam da campanha. Você pode expulsar jogadores se necessário."}

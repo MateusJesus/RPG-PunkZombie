@@ -2,7 +2,7 @@
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Box } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 import { TiStarburst } from "react-icons/ti";
 import Link from "next/link";
@@ -15,6 +15,8 @@ export default function ItemFicha({ data }) {
 
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     if (!user || !data?.id) return;
@@ -30,7 +32,7 @@ export default function ItemFicha({ data }) {
     };
 
     fetchLikeData();
-  }, [user, data?.id, toggleLikeFicha]); // Certifique-se de que a função toggleLikeFicha seja estável
+  }, [user, data?.id, toggleLikeFicha]);
 
   const handleLike = async () => {
     if (!user || !data?.id) return;
@@ -55,9 +57,9 @@ export default function ItemFicha({ data }) {
       <Link href={`/ficha/${data.id}`}>
         <Card
           sx={{
-            maxWidth: "500px",
+            maxWidth: !isMobile ? "500px" : "100%",
+            minWidth: !isMobile ? "500px" : "90vw",
             cursor: "pointer",
-            minWidth: "500px",
             height: "300px",
             display: "flex",
             justifyContent: "space-between",

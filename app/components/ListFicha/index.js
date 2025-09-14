@@ -9,23 +9,18 @@ export default function ListFicha({ datas }) {
         style={{
           marginTop: 20,
           listStyle: "none",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          display: "flex",
+          flexWrap: "wrap", 
+          justifyContent: "center",
+          gap: "20px",
         }}
       >
         {datas.length > 0 ? (
-          datas.map((data, index) => {
-            return (
-              <li
-                style={{
-                  margin: "0 0 20px  0",
-                }}
-                key={data.id + index}
-              >
-                <ItemFicha data={data} />
-              </li>
-            );
-          })
+          datas.map((data, index) => (
+            <li key={data.id + index}>
+              <ItemFicha data={data} />
+            </li>
+          ))
         ) : (
           <p>Não tem fichas aqui ainda...</p>
         )}

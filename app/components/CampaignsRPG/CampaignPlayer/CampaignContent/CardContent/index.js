@@ -1,10 +1,12 @@
 "use client";
 
-import { Box, Typography, Card, IconButton } from "@mui/material";
+import { Box, Typography, Card, IconButton, useMediaQuery } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function CardContent({ conteudos, filter, onEdit, onDelete }) {
+
+  const isMobile = useMediaQuery("(max-width:1100px)");
   const { user } = useAuth();
 
   return (
@@ -13,7 +15,7 @@ export default function CardContent({ conteudos, filter, onEdit, onDelete }) {
         mt: 3,
         alignItems: "start",
         width: "100%",
-        columnCount: 4,
+        columnCount: isMobile ? 2 : 5,
       }}
     >
       {conteudos

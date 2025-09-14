@@ -1,21 +1,11 @@
 "use client";
 import React, { useState } from "react";
+import { Box, Tab, Tabs, IconButton, useMediaQuery } from "@mui/material";
+import { IoReloadOutline } from "react-icons/io5";
 import JogadoresLista from "./JogadoresLista";
-import {
-  Box,
-  Tab,
-  Tabs,
-  Typography,
-  Paper,
-  useMediaQuery,
-  useTheme,
-  Button,
-  ButtonBase,
-} from "@mui/material";
 import CampaignContent from "./CampaignContent";
 import CampaignHistory from "./CampaignHistory";
 import CampaignFichas from "./CampaignFichas";
-import { IoReloadOutline } from "react-icons/io5";
 
 function a11yProps(index) {
   return {
@@ -32,11 +22,7 @@ function CustomTabPanel({ children, value, index }) {
       id={`custom-tabpanel-${index}`}
       aria-labelledby={`custom-tab-${index}`}
     >
-      {value === index && (
-        <Box sx={{ p: ".5em 0" }}>
-          <Typography component="div">{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: ".5em 0" }}>{children}</Box>}
     </div>
   );
 }
@@ -48,29 +34,62 @@ export default function CampaignPlayer({
   atualizarCampanha,
 }) {
   const [value, setValue] = useState(0);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  console.log("Form Data em CampaignPlayer:", isMobile);
+  const isMobile = useMediaQuery("(max-width:1100px)");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const tabs = [];
-  isOwner &&
-    formData.pedidosEntrada.length !== 0 &&
-    tabs.push({ label: "Pedidos de Entrada" });
-  tabs.push({ label: "Participantes" });
-  tabs.push({ label: "Fichas" });
-  tabs.push({ label: "História" });
-  tabs.push({ label: "Conteúdo" });
+
+  if (isOwner && formData.pedidosEntrada?.length > 0) {
+    tabs.push({
+      label: "Pedidos de Entrada",
+      content: (
+        <JogadoresLista
+          atualizarCampanha={atualizarCampanha}
+          idCampaigns={idCampaigns}
+          pedidosEntrada={formData.pedidosEntrada}
+          isOwner={isOwner}
+        />
+      ),
+    });
+  }
+
+  tabs.push(
+    {
+      label: "Participantes",
+      content: (
+        <JogadoresLista
+          onClick={atualizarCampanha}
+          idCampaigns={idCampaigns}
+          jogadores={formData.jogadores}
+          formData={formData}
+          isOwner={isOwner}
+        />
+      ),
+    },
+    {
+      label: "Fichas",
+      content: <CampaignFichas formData={formData} idCampaigns={idCampaigns} />,
+    },
+    {
+      label: "História",
+      content: <CampaignHistory idCampaign={idCampaigns} formData={formData} />,
+    },
+    {
+      label: "Conteúdo",
+      content: (
+        <CampaignContent formData={formData} idCampaigns={idCampaigns} />
+      ),
+    }
+  );
 
   return (
     <>
       <Box
         sx={{
-          justifyContent: "space-between",
           borderBottom: 1,
           borderColor: "divider",
           width: "100%",
@@ -83,18 +102,16 @@ export default function CampaignPlayer({
           onChange={handleChange}
           scrollButtons="auto"
           textColor="inherit"
-          variant="fullWidth"
+          variant={isMobile ? "scrollable" : "fullWidth"}
           indicatorColor="secondary"
           aria-label="Abas da campanha"
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "100%",
+            flex: 1,
             ".MuiTab-root": {
               textTransform: "none",
               fontWeight: 500,
               fontSize: 16,
-              width: isMobile ? "100%" : "auto",
+              minWidth: isMobile ? "auto" : 120,
             },
           }}
         >
@@ -102,66 +119,17 @@ export default function CampaignPlayer({
             <Tab key={index} label={tab.label} {...a11yProps(index)} />
           ))}
         </Tabs>
-        <hr />
-        <Tab
-          onClick={atualizarCampanha}
-          key={"reload"}
-          label={<IoReloadOutline />}
-        />
+
+        <IconButton onClick={atualizarCampanha} sx={{ ml: 1 }}>
+          <IoReloadOutline />
+        </IconButton>
       </Box>
 
-      {tabs.map((tab, index) => {
-        if (tab.label === "Pedidos de Entrada") {
-          return (
-            <CustomTabPanel key={index} value={value} index={index}>
-              <JogadoresLista
-                atualizarCampanha={atualizarCampanha}
-                idCampaigns={idCampaigns}
-                pedidosEntrada={formData.pedidosEntrada}
-                isOwner={isOwner}
-              />
-            </CustomTabPanel>
-          );
-        }
-
-        if (tab.label === "Participantes") {
-          return (
-            <CustomTabPanel key={index} value={value} index={index}>
-              <JogadoresLista
-                onClick={atualizarCampanha}
-                idCampaigns={idCampaigns}
-                jogadores={formData.jogadores}
-                formData={formData}
-                isOwner={isOwner}
-              />
-            </CustomTabPanel>
-          );
-        }
-
-        if (tab.label === "Fichas") {
-          return (
-            <CustomTabPanel key={index} value={value} index={index}>
-              <CampaignFichas formData={formData} idCampaigns={idCampaigns} />
-            </CustomTabPanel>
-          );
-        }
-
-        if (tab.label === "História") {
-          return (
-            <CustomTabPanel key={index} value={value} index={index}>
-              <CampaignHistory idCampaign={idCampaigns} formData={formData} />
-            </CustomTabPanel>
-          );
-        }
-
-        if (tab.label === "Conteúdo") {
-          return (
-            <CustomTabPanel key={index} value={value} index={index}>
-              <CampaignContent formData={formData} idCampaigns={idCampaigns} />
-            </CustomTabPanel>
-          );
-        }
-      })}
+      {tabs.map((tab, index) => (
+        <CustomTabPanel key={index} value={value} index={index}>
+          {tab.content}
+        </CustomTabPanel>
+      ))}
     </>
   );
 }

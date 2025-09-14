@@ -7,23 +7,34 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
+  useMediaQuery,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import AddContentModal from "./AddContentModal";
 import { useAuth } from "@/app/contexts/AuthContext";
 import CardContent from "./CardContent";
+import { Add, AddAPhoto } from "@mui/icons-material";
 
 export default function CampaignContent({ idCampaigns, formData }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
   const [openModal, setOpenModal] = useState(false);
   const [conteudos, setConteudos] = useState([]);
   const [conteudoEditando, setConteudoEditando] = useState(null);
   const [filtro, setFiltro] = useState("todos");
   const [loading, setLoading] = useState(false);
+
+  const isMobile = useMediaQuery("(max-width:1100px)");
   const [statusContent, setStatusContent] = useState({
     status: false,
     alert: "",
     message: "",
   });
+
   const [content, setContent] = useState({
     nome: "",
     tipo: "",
@@ -31,6 +42,15 @@ export default function CampaignContent({ idCampaigns, formData }) {
     outroTipo: "",
     imagem: null,
   });
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseFilter = (tipo) => {
+    if (tipo) setFiltro(tipo);
+    setAnchorEl(null);
+  };
 
   const {
     adicionarConteudoCampanha,
@@ -196,7 +216,7 @@ export default function CampaignContent({ idCampaigns, formData }) {
         >
           Conteúdo da campanha
         </Typography>
-        <Typography variant="body1" color="text.secondary" width={500}>
+        <Typography variant="body1" color="text.secondary" maxWidth={500}>
           Este espaço é dedicado ao conteúdo exclusivo da campanha. Pode incluir
           informações sobre a história, personagens importantes, eventos
           marcantes, itens especiais e muito mais.
@@ -218,41 +238,82 @@ export default function CampaignContent({ idCampaigns, formData }) {
               flexDirection: "column",
             }}
           >
-            <Typography
-              variant="body1"
-              textAlign={"initial"}
-              textTransform={"uppercase"}
-              color="text.secondary"
-              mr={1}
-            >
-              Filtrar por:
-            </Typography>
-            <Box>
-              {tipos.map((tipo) => (
+            {" "}
+            {isMobile ? (
+              <>
                 <Button
-                  key={tipo}
-                  size="small"
-                  variant={filtro === tipo ? "contained" : "outlined"}
+                  variant="outlined"
                   color="inherit"
-                  onClick={() => setFiltro(tipo)}
-                  sx={{ p: "0 10px", m: "3px" }}
+                  onClick={handleClick}
+                  sx={{ textTransform: "uppercase" }}
                 >
-                  {tipo.toUpperCase()}
+                  Filtrar
                 </Button>
-              ))}
-            </Box>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={() => handleCloseFilter()}
+                >
+                  {tipos.map((tipo) => (
+                    <MenuItem
+                      key={tipo}
+                      selected={filtro === tipo}
+                      onClick={() => handleCloseFilter(tipo)}
+                    >
+                      {tipo.toUpperCase()}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Typography
+                  variant="body1"
+                  textAlign="initial"
+                  textTransform="uppercase"
+                  color="text.secondary"
+                  mr={1}
+                >
+                  Filtrar por:
+                </Typography>
+                <Box>
+                  {tipos.map((tipo) => (
+                    <Button
+                      key={tipo}
+                      size="small"
+                      variant={filtro === tipo ? "contained" : "outlined"}
+                      color="inherit"
+                      onClick={() => setFiltro(tipo)}
+                      sx={{ p: "0 10px", m: "3px" }}
+                    >
+                      {tipo.toUpperCase()}
+                    </Button>
+                  ))}
+                </Box>
+              </>
+            )}
           </Box>
           {(formData.mestreId === user.uid ||
             (formData.configGeral.permissaoConteudo === "jogadoresContent" &&
-              formData.jogadores.some((j) => j.uid === user.uid))) && (
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => setOpenModal(true)}
-            >
-              Adicionar conteúdo
-            </Button>
-          )}
+              formData.jogadores.some((j) => j.uid === user.uid))) &&
+            (isMobile ? (
+              <IconButton
+                variant="outlined"
+                style={{ border: "1px solid var(--color-1)" }}
+                color="secondary"
+                onClick={() => setOpenModal(true)}
+              >
+                <Add />
+              </IconButton>
+            ) : (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => setOpenModal(true)}
+              >
+                Adicionar Conteúdo
+              </Button>
+            ))}
         </Box>
         <hr className="separation" />
 

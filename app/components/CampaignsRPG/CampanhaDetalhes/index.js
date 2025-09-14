@@ -9,11 +9,15 @@ import {
   Box,
   Button,
   Chip,
+  useMediaQuery,
 } from "@mui/material";
 import { Settings } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
 export default function CampanhaDetalhes({ formData, isOwner, idCampaigns }) {
+
+  const isMobile = useMediaQuery("(max-width:1100px)");
+
   const router = useRouter();
 
   return (
@@ -36,7 +40,7 @@ export default function CampanhaDetalhes({ formData, isOwner, idCampaigns }) {
                     "linear-gradient(0deg,rgba(30, 30, 30, 1) 0%, rgba(255, 255, 255, 0) 50%, rgba(30, 30, 30, 1) 100%)",
                   position: "absolute",
                   minWidth: "100%",
-                  minHeight: "400px",
+                  minHeight: "99%",
                   overflow: "hidden",
                 }}
               />
