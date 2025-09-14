@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
   Button,
+  Box,
 } from "@mui/material";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -18,7 +19,9 @@ export default function JogadoresLista({
   jogadores,
   isOwner,
   idCampaigns,
+  atualizarCampanha,
 }) {
+
   const { gerenciarPedidoEntrada, sairDaCampanha, user } = useAuth();
   const router = useRouter();
 
@@ -34,7 +37,7 @@ export default function JogadoresLista({
   const handleAcao = async (jogadorObj, acao) => {
     try {
       await gerenciarPedidoEntrada(idCampaigns, jogadorObj, acao);
-      //window.location.reload();
+      atualizarCampanha();
     } catch (err) {
       console.error("Erro ao processar pedido:", err);
     }
@@ -50,9 +53,30 @@ export default function JogadoresLista({
 
   return (
     <>
-      <Typography variant="h6" className="mb-4">
-        {jogadores ? "Jogadores da campanha" : "Pedidos de entrada"}
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          textAlign: "center",
+          width: "100%",
+        }}
+      >
+        <Typography
+          variant="h5"
+          fontWeight={"bold"}
+          textTransform={"uppercase"}
+          color="text.secondary"
+        >
+          Lista de {pedidosEntrada ? "Pedidos" : "Jogadores"}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" width={500}>
+          {pedidosEntrada
+            ? "Aqui estão os jogadores que solicitaram entrada na campanha. Você pode aceitar ou recusar seus pedidos."
+            : "Aqui estão os jogadores que participam da campanha. Você pode expulsar jogadores se necessário."}
+        </Typography>
+        <hr className="separation" />
+      </Box>
 
       <Table>
         <TableHead>
@@ -124,8 +148,7 @@ export default function JogadoresLista({
                   </Button>
                 </TableCell>
               ) : (
-                <TableCell>
-                </TableCell>
+                <TableCell></TableCell>
               )}
             </TableRow>
           ))}

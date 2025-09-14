@@ -36,6 +36,11 @@ export default function CampaignFichas({ idCampaigns, formData }) {
     fetchFichas();
   }, [idCampaigns]);
 
+  useEffect(() => {
+    console.log("Atualizando fichas da campanha...");
+    if (formData && formData.contents) fetchFichas();
+  }, [formData]);
+
   const fetchFichas = async () => {
     try {
       setLoading(true);
@@ -51,7 +56,7 @@ export default function CampaignFichas({ idCampaigns, formData }) {
       setLoading(false);
     }
   };
-  
+
   const handleSaveFicha = async (data) => {
     try {
       setLoading(true);

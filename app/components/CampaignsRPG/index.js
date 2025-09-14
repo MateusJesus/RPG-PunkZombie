@@ -43,6 +43,13 @@ export default function CampaignsRPG({ idCampaigns }) {
     fetchCampanha();
   }, [idCampaigns, user]);
 
+  const atualizarCampanha = async () => {
+    console.log("Atualizando campanha...");
+    if (!idCampaigns) return;
+    const dados = await abrirCampanha(idCampaigns);
+    setFormData(dados);
+  };
+
   if (loadingPage || !formData) return <LoadingPage />;
 
   const aguardandoPermissao = formData.pedidosEntrada?.some(
@@ -126,6 +133,7 @@ export default function CampaignsRPG({ idCampaigns }) {
             formData={formData}
             idCampaigns={idCampaigns}
             isOwner={isOwner}
+            atualizarCampanha={() => atualizarCampanha()}
           />
         </>
       )}

@@ -51,6 +51,11 @@ export default function CampaignContent({ idCampaigns, formData }) {
     "outros",
   ];
 
+  useEffect(() => {
+    console.log("Atualizando conteudos da campanha...");
+    if (formData && formData.contents) setConteudos(formData.contents || []);
+  }, [formData]);
+
   const fetchConteudos = async () => {
     try {
       const conteudosCampanha = await getConteudosCampanha(idCampaigns);

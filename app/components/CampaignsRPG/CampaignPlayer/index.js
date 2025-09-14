@@ -9,10 +9,13 @@ import {
   Paper,
   useMediaQuery,
   useTheme,
+  Button,
+  ButtonBase,
 } from "@mui/material";
 import CampaignContent from "./CampaignContent";
 import CampaignHistory from "./CampaignHistory";
 import CampaignFichas from "./CampaignFichas";
+import { IoReloadOutline } from "react-icons/io5";
 
 function a11yProps(index) {
   return {
@@ -38,7 +41,12 @@ function CustomTabPanel({ children, value, index }) {
   );
 }
 
-export default function CampaignPlayer({ idCampaigns, isOwner, formData }) {
+export default function CampaignPlayer({
+  idCampaigns,
+  isOwner,
+  formData,
+  atualizarCampanha,
+}) {
   const [value, setValue] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -47,17 +55,26 @@ export default function CampaignPlayer({ idCampaigns, isOwner, formData }) {
     setValue(newValue);
   };
 
+
   const tabs = [];
-  if (isOwner) tabs.push({ label: "Pedidos de Entrada" });
+  isOwner &&
+    formData.pedidosEntrada.length !== 0 &&
+    tabs.push({ label: "Pedidos de Entrada" });
   tabs.push({ label: "Participantes" });
   tabs.push({ label: "Fichas" });
   tabs.push({ label: "História" });
   tabs.push({ label: "Conteúdo" });
 
-
   return (
     <>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          borderBottom: 1,
+          borderColor: "divider",
+        }}
+      >
         <Tabs
           value={value}
           onChange={handleChange}
@@ -67,10 +84,14 @@ export default function CampaignPlayer({ idCampaigns, isOwner, formData }) {
           indicatorColor="secondary"
           aria-label="Abas da campanha"
           sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: isMobile ? "100%" : "auto",
             ".MuiTab-root": {
               textTransform: "none",
               fontWeight: 500,
               fontSize: 16,
+              width: isMobile ? "100%" : "auto",
             },
           }}
         >
@@ -78,23 +99,23 @@ export default function CampaignPlayer({ idCampaigns, isOwner, formData }) {
             <Tab key={index} label={tab.label} {...a11yProps(index)} />
           ))}
         </Tabs>
+        <Tab
+          onClick={atualizarCampanha}
+          key={"reload"}
+          label={<IoReloadOutline />}
+        />
       </Box>
 
       {tabs.map((tab, index) => {
         if (tab.label === "Pedidos de Entrada") {
           return (
             <CustomTabPanel key={index} value={value} index={index}>
-              {formData.pedidosEntrada?.length > 0 ? (
-                <JogadoresLista
-                  idCampaigns={idCampaigns}
-                  pedidosEntrada={formData.pedidosEntrada}
-                  isOwner={isOwner}
-                />
-              ) : (
-                <Typography color="text.secondary">
-                  Nenhum pedido de entrada no momento.
-                </Typography>
-              )}
+              <JogadoresLista
+                atualizarCampanha={atualizarCampanha}
+                idCampaigns={idCampaigns}
+                pedidosEntrada={formData.pedidosEntrada}
+                isOwner={isOwner}
+              />
             </CustomTabPanel>
           );
         }
@@ -102,18 +123,13 @@ export default function CampaignPlayer({ idCampaigns, isOwner, formData }) {
         if (tab.label === "Participantes") {
           return (
             <CustomTabPanel key={index} value={value} index={index}>
-              {formData.jogadores?.length > 0 ? (
-                <JogadoresLista
-                  idCampaigns={idCampaigns}
-                  jogadores={formData.jogadores}
-                  formData={formData}
-                  isOwner={isOwner}
-                />
-              ) : (
-                <Typography color="text.secondary">
-                  Nenhum jogador na campanha.
-                </Typography>
-              )}
+              <JogadoresLista
+                onClick={atualizarCampanha}
+                idCampaigns={idCampaigns}
+                jogadores={formData.jogadores}
+                formData={formData}
+                isOwner={isOwner}
+              />
             </CustomTabPanel>
           );
         }

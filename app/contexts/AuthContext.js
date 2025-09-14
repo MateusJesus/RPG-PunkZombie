@@ -539,7 +539,7 @@ export function AuthProvider({ children }) {
       });
 
       console.log(
-        `Jogador ${uidJogador} removido da campanha ${idCampanha} com sucesso!`
+        `Jogador removido da campanha com sucesso!`
       );
     } catch (error) {
       console.error(
