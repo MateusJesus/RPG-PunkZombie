@@ -13,7 +13,7 @@ import {
 import { deepPurple } from "@mui/material/colors";
 
 export default function ProfileDetails() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   if (!user) {
     return (
@@ -60,13 +60,21 @@ export default function ProfileDetails() {
             <Typography variant="body2">01/04/2025</Typography> */}
       </Box>
 
-      <Button
+      {/* <Button
         variant="contained"
         color="secondary"
         sx={{ mt: 3 }}
         onClick={() => alert("Função de editar ainda não implementada.")}
       >
         Editar Perfil
+      </Button> */}
+      <Button
+        variant="contained"
+        color="error"
+        sx={{ mt: 3 }}
+        onClick={logout}
+      >
+        Sair
       </Button>
     </CardContent>
   );
