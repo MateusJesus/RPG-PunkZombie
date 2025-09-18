@@ -247,6 +247,7 @@ export default function Pericias({ setFormData, formData, calcularPer }) {
                   <InputFicha
                     formData={formData}
                     disabled
+                    onBlur={calcularPer}
                     value={parseInt(formData.status.status_niv / 2) || 0}
                   />
                 </td>
@@ -256,7 +257,7 @@ export default function Pericias({ setFormData, formData, calcularPer }) {
                     name={`outros`}
                     type="number"
                     value={pericia.outros}
-                    onBlur={(e) => changePericia(e, index)}
+                    onChange={(e) => changePericia(e, index)}
                   />
                 </td>
                 <td>

@@ -38,7 +38,7 @@ export default function ImageCharacter({ formData, setFormData }) {
     setPreview("");
     setFormData((prev) => ({
       ...prev,
-      imagem: "delete", 
+      imagem: "delete",
     }));
 
     setAnchorEl(null);
@@ -58,15 +58,6 @@ export default function ImageCharacter({ formData, setFormData }) {
         openModal={openEditor}
         handleModal={() => setOpenEditor(false)}
       />
-
-      {/* <CircularProgress
-        color="inherit"
-        style={{
-          position: "absolute",
-          top: '50%',
-          left: '50%',
-        }}
-      /> */}
 
       {(formData.imagem && formData.imagem !== "delete") || preview ? (
         <>

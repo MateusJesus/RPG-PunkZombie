@@ -16,13 +16,7 @@ import Pericias from "./Pericias";
 import TitleContent from "../ComponentsFicha/TitleContent";
 import ImageHandler from "@/app/components/ImageHandler";
 
-export default function Character({
-  user,
-  handleBlur,
-  formData,
-  setFormData,
-  setSaved,
-}) {
+export default function Character({ user, handleBlur, formData, setFormData }) {
   const textFieldsCharacter = {
     camposInformacoes: [
       {
@@ -190,6 +184,7 @@ export default function Character({
   };
 
   const calcularPer = () => {
+
     setFormData((prevFormData) => {
       const updatedPericias = prevFormData.pericias?.map((pericia) => ({
         ...pericia,

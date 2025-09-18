@@ -184,75 +184,68 @@ export default function FichaRPG({ idFicha }) {
   const handleCloseSpeedDial = () => setOpenSpeedDial(false);
 
   const handleSpeedDialAction = async (name) => {
-    if (name === "Configurações") {
-      setOpenSettings(true);
-    } else if (name === "Customização") {
-      setOpenCustomize(true);
-    } else if (name === "Save") {
-      setLoadingPage(true);
+    const showSnackbar = (message, severity = "info") =>
+      setSnackbar({ open: true, message, severity });
 
-      try {
+    try {
+      if (name === "Configurações") {
+        setOpenSettings(true);
+      } else if (name === "Customização") {
+        setOpenCustomize(true);
+      } else if (name === "Save") {
+        setLoadingPage(true);
+
         if (idFicha) {
-          if (
-            campaignData &&
+          // Se já existe ficha
+          const isMestreDaCampanha =
             campaignData?.mestreId === user?.uid &&
-            campaignData?.id === formData.config.belongs_input
-          ) {
-            await editarFichaMestre(idFicha, formData);
+            campaignData?.id === formData.config.belongs;
 
-            setSnackbar({
-              open: true,
-              message: "Ficha editada com sucesso!",
-              severity: "success",
-            });
-            setSaved(true);
+          let dadosFicha;
+          if (isMestreDaCampanha) {
+            await editarFichaMestre(idFicha, formData);
           } else {
-            const dadosFicha = await editarFicha(idFicha, formData);
+            dadosFicha = await editarFicha(idFicha, formData);
             setFormDataOld(dadosFicha);
             setFormData(dadosFicha);
-
-            setSnackbar({
-              open: true,
-              message: "Ficha editada com sucesso!",
-              severity: "success",
-            });
-            setSaved(true);
           }
+
+          showSnackbar("Ficha editada com sucesso!", "success");
+          setSaved(true);
         } else {
-          if (formData.config.belongs === "") {
+          // Nova ficha
+          if (!formData.config.belongs) {
             setOpenSettings(true);
-            setSnackbar({
-              open: true,
-              message: "Preencha as configurações antes de salvar.",
-              severity: "warning",
-            });
+            showSnackbar(
+              "Preencha as configurações antes de salvar.",
+              "warning"
+            );
           } else {
             const idFichaSalva = await salvarFicha(formData);
+
             setShowSuccessDialog({
               open: true,
               icon: <CheckCircle style={{ fontSize: 60, color: "#4caf50" }} />,
               title: "Ficha criada com sucesso!",
               message: "Redirecionando...",
             });
+
             setSaved(true);
+
             setTimeout(() => {
               setShowSuccessDialog({ open: false });
               router.push("/ficha/" + idFichaSalva);
             }, 2500);
           }
         }
-      } catch (error) {
-        console.error(error);
-        setSnackbar({
-          open: true,
-          message: "Erro ao salvar a ficha!",
-          severity: "error",
-        });
-      } finally {
-        setLoadingPage(false);
       }
+    } catch (error) {
+      console.error(error);
+      showSnackbar(error.message || "Erro ao salvar a ficha!", "error");
+    } finally {
+      if (name === "Save") setLoadingPage(false);
+      handleCloseSpeedDial();
     }
-    handleCloseSpeedDial();
   };
 
   const handleBlur = (e) => {

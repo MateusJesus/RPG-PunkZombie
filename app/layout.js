@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import { AuthProvider } from "./contexts/AuthContext";
 
 export const metadata = {
-  title: "Minha Aplicação",
+  title: "RPG | Punkzombie",
   description: "Descrição do site",
 };
 

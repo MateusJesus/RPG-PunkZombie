@@ -14,7 +14,7 @@ export default function ConfigCampaign(props) {
 
   return (
     <section>
-      <ConfigCampaignComponent idCampanha={slug} />;
+      <ConfigCampaignComponent idCampanha={slug} />
     </section>
   );
 }

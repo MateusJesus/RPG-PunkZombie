@@ -3,6 +3,7 @@
 import React from "react";
 import classStyled from "./campaign.module.css";
 import {
+  Button,
   FormControl,
   FormControlLabel,
   Radio,
@@ -280,13 +281,18 @@ export default function InfoCampaign({
           </div>
         </div>
 
-        <div className="box" style={{ textAlign: "right" }}>
-          <button className="botaoAdicionar" type="submit">
-            {idCampanha ? "Atualizar Campanha" : "Criar Campanha"}
-          </button>
+        <div
+          style={{
+            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           {idCampanha && (
-            <button
-              className="botaoExcluir"
+            <Button
+              color="error"
+              variant="outlined"
               type="button"
               onClick={() => {
                 const confirmar = confirm(
@@ -296,11 +302,18 @@ export default function InfoCampaign({
                   excluirCampanha(idCampanha);
                 }
               }}
-              style={{ marginRight: "1rem", backgroundColor: "#c0392b" }}
             >
               Excluir Campanha
-            </button>
+            </Button>
           )}
+          <Button
+            color="secondary"
+            variant="contained"
+            type="submit"
+            sx={{ m: 1 }}
+          >
+            {idCampanha ? "Atualizar Campanha" : "Criar Campanha"}
+          </Button>
         </div>
       </div>
     </form>

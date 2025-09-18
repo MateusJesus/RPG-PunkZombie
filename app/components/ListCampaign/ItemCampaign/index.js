@@ -53,7 +53,6 @@ export default function ItemCampaign({ data }) {
     <Box>
       <Box
         sx={{
-          minWidth: "100%",
         }}
       >
         <Link href={`/campaigns/${data.id}`}>
@@ -80,6 +79,7 @@ export default function ItemCampaign({ data }) {
                   wordBreak: "break-word",
                   overflowWrap: "break-word",
                   display: "flex",
+                  pb: 2,
                   alignItems: "center",
                   fontWeight: "300",
                   margin: "0",
@@ -173,8 +173,6 @@ export default function ItemCampaign({ data }) {
         {user && (
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "end",
             }}
           >
             <Box
@@ -186,13 +184,6 @@ export default function ItemCampaign({ data }) {
             >
               {likeCount}
               <LikeButton isLiked={liked} onToggle={handleLike} />
-              <Typography
-                sx={{
-                  fontSize: "14px",
-                  color: "text.secondary",
-                  userSelect: "none",
-                }}
-              ></Typography>
             </Box>
           </Box>
         )}

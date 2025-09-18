@@ -160,7 +160,6 @@ export function AuthProvider({ children }) {
         data_hora: new Date(),
       };
 
-      // Cria o documento inicial (sem imagem)
       const docRef = await addDoc(fichasRef, fichaComUsuario);
 
       fichaComUsuario = await processarImagemFicha(
@@ -169,7 +168,6 @@ export function AuthProvider({ children }) {
         `punkzombie/fichas/${fichaComUsuario.usuario}/${docRef.id}`
       );
 
-      // Atualiza o mesmo documento com a imagem
       await setDoc(doc(db, "fichas", docRef.id), fichaComUsuario, {
         merge: true,
       });
@@ -185,21 +183,29 @@ export function AuthProvider({ children }) {
     try {
       if (!user) throw new Error("Usuário não autenticado.");
 
+      const fichaRef = doc(db, "fichas", idFicha);
+
+      const fichaSnap = await getDoc(fichaRef);
+      if (!fichaSnap.exists()) throw new Error("Ficha não encontrada.");
+
+      const dadosAntigos = fichaSnap.data();
+
       let fichaComUsuario = {
+        ...dadosAntigos,
         ...dadosAtualizados,
         uid: user.uid,
         usuario: user.displayName,
       };
 
-      // Processa a imagem antes de atualizar
-      fichaComUsuario = await processarImagemFicha(
-        fichaComUsuario,
-        imageFicha,
-        `punkzombie/fichas/${fichaComUsuario.usuario}/${idFicha}`
-      );
+      if (imageFicha) {
+        fichaComUsuario = await processarImagemFicha(
+          fichaComUsuario,
+          imageFicha,
+          `punkzombie/fichas/${fichaComUsuario.usuario}/${idFicha}`
+        );
+      }
 
-      const fichaRef = doc(db, "fichas", idFicha);
-      await updateDoc(fichaRef, fichaComUsuario);
+      await setDoc(fichaRef, fichaComUsuario, { merge: true });
 
       return fichaComUsuario;
     } catch (error) {
@@ -371,7 +377,9 @@ export function AuthProvider({ children }) {
 
   const criarCampanha = async (dados) => {
     try {
-      const docRef = await addDoc(collection(db, "campanhas"), {
+      const docRef = doc(collection(db, "campanhas")); // gera id manualmente
+
+      let campaign = {
         ...dados,
         jogadoresUids: [],
         mestreId: user.uid,
@@ -386,8 +394,19 @@ export function AuthProvider({ children }) {
             papel: "mestre",
           },
         ],
-      });
-      console.log("Campanha criada com ID:", docRef.id);
+      };
+
+      // só processa imagem se tiver
+      if (imageFicha) {
+        campaign = await processarImagemFicha(
+          campaign,
+          imageFicha,
+          `punkzombie/campaigns/${campaign.username}/${docRef.id}`
+        );
+      }
+
+      await setDoc(docRef, campaign);
+
       return docRef.id;
     } catch (error) {
       console.error("Erro ao criar campanha:", error);
@@ -406,7 +425,7 @@ export function AuthProvider({ children }) {
       campaign = await processarImagemFicha(
         campaign,
         imageFicha,
-        `punkzombie/campaigns/${campaign.uid}/${idCampanha}`
+        `punkzombie/campaigns/${campaign.usuario}/${idCampanha}`
       );
 
       const docRef = doc(db, "campanhas", idCampanha);
@@ -538,9 +557,7 @@ export function AuthProvider({ children }) {
         jogadoresUids: jogadoresAtualizados.map((j) => j.uid),
       });
 
-      console.log(
-        `Jogador removido da campanha com sucesso!`
-      );
+      console.log(`Jogador removido da campanha com sucesso!`);
     } catch (error) {
       console.error(
         `Erro ao remover jogador ${uidJogador} da campanha ${idCampanha}:`,
@@ -643,7 +660,7 @@ export function AuthProvider({ children }) {
     novoConteudo = await processarImagemFicha(
       novoConteudo,
       imageFicha,
-      `punkzombie/campaigns/${usernameMestre}/${campanhaId}`
+      `punkzombie/campaigns/${usernameMestre}/${campanhaId}/content_${user.displayName}`
     );
 
     await updateDoc(campanhaRef, {
@@ -931,6 +948,44 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const carregarMinhasCampanhasCriadas = async () => {
+    try {
+      if (!user) throw new Error("Usuário não autenticado.");
+
+      const q = query(
+        collection(db, "campanhas"),
+        where("uid", "==", user.uid)
+      );
+
+      const snap = await getDocs(q);
+      const campanhas = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+      return { campanhas };
+    } catch (error) {
+      console.error("Erro ao carregar campanhas criadas:", error.message);
+      return { campanhas: [] };
+    }
+  };
+
+  // 🔹 Campanhas que participo
+  const carregarCampanhasParticipando = async () => {
+    try {
+      if (!user) throw new Error("Usuário não autenticado.");
+
+      const snap = await getDocs(collection(db, "campanhas"));
+      const campanhas = snap.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .filter((campanha) =>
+          campanha.jogadores?.some((j) => j.uid === user.uid)
+        );
+
+      return { campanhas };
+    } catch (error) {
+      console.error("Erro ao carregar campanhas que participo:", error.message);
+      return { campanhas: [] };
+    }
+  };
+
   const excluirCampanha = async (idCampanha) => {
     try {
       await deleteDoc(doc(db, "campanhas", idCampanha));
@@ -1081,6 +1136,8 @@ export function AuthProvider({ children }) {
         getFichasCampanha,
         alterarViewOpening,
         listarCampanhasPublicas,
+        carregarMinhasCampanhasCriadas,
+        carregarCampanhasParticipando,
         excluirCampanha,
         toggleLikeCampanha,
         toggleLikeFicha,

@@ -11,6 +11,7 @@ export default function InputFicha({
   value,
   disabled,
   onBlur,
+  onChange,
   formData,
 }) {
   const tema = formData?.customize?.tema;
@@ -91,7 +92,7 @@ export default function InputFicha({
             name={name}
             maxLength={maxLength}
             defaultValue={value}
-            onBlur={onBlur} 
+            onBlur={onBlur}
           />
           {tema === "fungo" && <div style={getMaskStyle(bgTextarea.src)} />}
         </div>
@@ -100,13 +101,15 @@ export default function InputFicha({
           <input
             style={styled.custom_input}
             disabled={disabled}
-            {...(disabled && { value: value })}
             type={type}
             id={name}
             name={name}
             maxLength={maxLength}
-            {...(!disabled && { defaultValue: value })}
+            {...(disabled && onBlur && { value: value })}
+            {...(!disabled && onBlur && { defaultValue: value })}
+            {...(onChange && !disabled && { value: value })}
             onBlur={onBlur}
+            onChange={onChange}
           />
           {tema === "fungo" && <div style={getMaskStyle(bgInput.src)} />}
         </div>

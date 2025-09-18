@@ -13,7 +13,7 @@ export default function ListCampaign({ datas }) {
           marginTop: 20,
           listStyle: "none",
           minWidth: "100%",
-          columnCount: !isMobile ? "2" : 1,
+          columnCount: !isMobile ? 1 : 1,
         }}
       >
         {datas.length > 0 ? (
