@@ -10,7 +10,7 @@ import CampaignsRPG from "@/app/components/CampaignsRPG";
 export default function Campaign(props) {
   const { loadingPage } = useAuth();
 
-  if (loadingPage) return <LoadingPage />;
+  //if (loadingPage) return <LoadingPage />;
 
   const { slug } = use(props.params);
 

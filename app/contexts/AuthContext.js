@@ -52,16 +52,31 @@ export function AuthProvider({ children }) {
     setImageFicha(null);
   }, [pathname]);
 
-  const signUp = async (email, password, name) => {
+  const signUp = async (email, password, username) => {
+
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
     const user = userCredential.user;
-    await updateProfile(user, { displayName: name });
-    setUser({ ...user, displayName: name });
-    return user;
+
+    
+    await updateProfile(user, { displayName: username });
+
+    
+    try {
+      await setDoc(doc(db, "usuarios", username), {
+        uid: user.uid,
+        email: user.email,
+        createdAt: new Date(),
+      });
+    } catch (err) {
+      
+      throw new Error("Username já está em uso!");
+    }
+
+    return { ...user, displayName: username };
   };
 
   const signIn = async (email, password) => {
@@ -940,6 +955,8 @@ export function AuthProvider({ children }) {
         id: doc.id,
         ...doc.data(),
       }));
+
+      setLoadingPage(false);
 
       return { campanhas };
     } catch (error) {

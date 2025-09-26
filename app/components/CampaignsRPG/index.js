@@ -8,9 +8,16 @@ import CampanhaDetalhes from "./CampanhaDetalhes";
 import JogadoresLista from "./CampaignPlayer/JogadoresLista";
 import LoadingPage from "../Loading";
 import AberturaCampanha from "./AberturaCampanha";
-import { Box, Modal, Typography, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Modal,
+  Typography,
+  CircularProgress,
+  Button,
+} from "@mui/material";
 import { Password } from "@mui/icons-material";
 import CampaignPlayer from "./CampaignPlayer";
+import Link from "next/link";
 
 export default function CampaignsRPG({ idCampaigns }) {
   const { user, abrirCampanha, loadingPage } = useAuth();
@@ -49,6 +56,40 @@ export default function CampaignsRPG({ idCampaigns }) {
     const dados = await abrirCampanha(idCampaigns);
     setFormData(dados);
   };
+
+  if (loadingPage) return <LoadingPage />;
+
+  if (!user) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          textAlign: "center",
+          gap: 2,
+        }}
+      >
+        <Typography variant="h6" color="text.secondary">
+          Você precisa estar logado para criar campanhas.
+        </Typography>
+
+        <Link href="/">
+          <Button variant="outlined" color="secondary">
+            Voltar para a Home
+          </Button>
+        </Link>
+
+        <Link href="/login">
+          <Button variant="contained" color="secondary">
+            Fazer Login
+          </Button>
+        </Link>
+      </Box>
+    );
+  }
 
   if (loadingPage || !formData) return <LoadingPage />;
 

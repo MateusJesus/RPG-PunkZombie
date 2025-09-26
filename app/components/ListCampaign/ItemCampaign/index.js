@@ -51,11 +51,8 @@ export default function ItemCampaign({ data }) {
 
   return (
     <Box>
-      <Box
-        sx={{
-        }}
-      >
-        <Link href={`/campaigns/${data.id}`}>
+      <Box sx={{}}>
+        <Link href={`/campaigns/${data.id}`} prefetch={false}>
           <Card
             sx={{
               cursor: "pointer",
@@ -171,10 +168,7 @@ export default function ItemCampaign({ data }) {
           </Card>
         </Link>
         {user && (
-          <Box
-            sx={{
-            }}
-          >
+          <Box sx={{}}>
             <Box
               sx={{
                 display: "flex",
