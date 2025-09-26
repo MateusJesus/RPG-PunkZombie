@@ -67,8 +67,8 @@ if (!user) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "calc(90vh - var(--sidebar-height, 0px))", // ajusta conforme altura da sidebar
-        px: 2, // padding horizontal para celular
+        minHeight: "calc(90vh - var(--sidebar-height, 0px))",
+        px: 2, 
         textAlign: "center",
         gap: 2,
       }}
