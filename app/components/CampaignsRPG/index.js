@@ -59,23 +59,28 @@ export default function CampaignsRPG({ idCampaigns }) {
 
   if (loadingPage) return <LoadingPage />;
 
-  if (!user) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          textAlign: "center",
-          gap: 2,
-        }}
-      >
-        <Typography variant="h6" color="text.secondary">
-          Você precisa estar logado para criar campanhas.
-        </Typography>
+if (!user) {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "calc(90vh - var(--sidebar-height, 0px))", // ajusta conforme altura da sidebar
+        px: 2, // padding horizontal para celular
+        textAlign: "center",
+        gap: 2,
+      }}
+    >
+      <Typography variant="h4" fontWeight={700} color="secondary">
+        Você precisa estar logado!
+      </Typography>
+      <Typography variant="body1" color="text.secondary">
+        Você precisa estar logado para entrar na campanha.
+      </Typography>
 
+      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "center" }}>
         <Link href="/">
           <Button variant="outlined" color="secondary">
             Voltar para a Home
@@ -88,8 +93,9 @@ export default function CampaignsRPG({ idCampaigns }) {
           </Button>
         </Link>
       </Box>
-    );
-  }
+    </Box>
+  );
+}
 
   if (loadingPage || !formData) return <LoadingPage />;
 
