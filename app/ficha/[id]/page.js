@@ -1,8 +1,16 @@
-// app/ficha/[slug]/page.js
-import { use } from "react";
-import FichaClient from "./FichaClient";
+"use client";
 
-export default function FichaPage({ params }) {
-  const { slug } = use(params); // resolve a Promise no server
-  return <FichaClient slug={slug} />;
+import { useParams } from "next/navigation";
+
+import FichaRPG from "@/app/components/FichaRPG";
+
+export default function FichaPage() {
+  
+  const { id } = useParams();
+
+  return (
+    <section>
+      <FichaRPG idFicha={id} />
+    </section>
+  );
 }
