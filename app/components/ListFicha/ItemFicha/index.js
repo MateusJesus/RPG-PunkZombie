@@ -54,7 +54,7 @@ export default function ItemFicha({ data }) {
         alignItems: "end",
       }}
     >
-      <Link href={`/ficha/${data.id}`}>
+      <Link href={`/ficha/${data.id}`} prefetch={false}>
         <Card
           sx={{
             maxWidth: !isMobile ? "500px" : "100%",
